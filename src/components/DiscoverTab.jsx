@@ -1,16 +1,13 @@
 import {
   Apple,
-  BatteryFull,
   Dumbbell,
   Flame,
   Heart,
   Leaf,
   RotateCcw,
-  SignalHigh,
   SlidersHorizontal,
   Sprout,
   Sun,
-  WifiHigh,
   X,
 } from 'lucide-react';
 import RecipeCard from './RecipeCard.jsx';
@@ -46,19 +43,6 @@ const CHIP_STYLES = {
     icon: 'text-[#842cf2]',
   },
 };
-
-function StatusBar() {
-  return (
-    <div className="flex h-9 items-center justify-between px-4 text-[#050814]">
-      <span className="text-lg font-black leading-none">9:41</span>
-      <div className="flex items-center gap-2">
-        <SignalHigh className="h-5 w-5 stroke-[3]" aria-hidden="true" />
-        <WifiHigh className="h-5 w-5 stroke-[3]" aria-hidden="true" />
-        <BatteryFull className="h-6 w-6 stroke-[2.7]" aria-hidden="true" />
-      </div>
-    </div>
-  );
-}
 
 function RecipeActionButton({ type, label, onClick }) {
   const Icon = ACTION_ICONS[type] || Apple;
@@ -177,16 +161,14 @@ export default function DiscoverTab({
   const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
 
   return (
-    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-36 pt-2 sm:px-5">
+    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-36 pt-5 sm:px-5 sm:pt-8">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#dff1f0]/70 blur-3xl" />
         <div className="absolute -right-24 top-48 h-72 w-72 rounded-full bg-[#ffe4dc]/80 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,247,244,0.96)_44%,#f7f7f4_100%)]" />
       </div>
 
-      <StatusBar />
-
-      <header className="relative z-10 mt-5 flex w-full items-start">
+      <header className="relative z-10 flex w-full items-start">
         <div className="flex w-full min-w-0 items-start gap-3 sm:gap-4">
           <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#d6eb12] text-lg font-black leading-none text-[#071124] shadow-[0_16px_38px_rgba(255,91,65,0.18)] min-[380px]:h-16 min-[380px]:w-16 min-[380px]:text-xl sm:h-[76px] sm:w-[76px] sm:text-[1.45rem]">
             {initials}
@@ -196,7 +178,7 @@ export default function DiscoverTab({
             <p className="truncate pt-1 text-sm font-bold text-[#a2a8bb] sm:pt-2 sm:text-base">
               Good morning, {greetingName}!
             </p>
-            <h1 className="mt-1 max-w-[8.9em] text-[1.65rem] font-black leading-[0.95] text-[#071124] min-[380px]:text-[1.9rem] sm:text-[2.35rem]">
+            <h1 className="mt-1 max-w-[8.9em] text-[1.42rem] font-black leading-[0.95] text-[#071124] min-[380px]:text-[1.68rem] sm:text-[2.35rem]">
               Let's find your
               <span className="relative mt-1 inline-block text-[#ff5a43]">
                 next favorite
@@ -238,7 +220,7 @@ export default function DiscoverTab({
         />
       </div>
 
-      <div className="z-10 mt-8 flex w-full items-center justify-center gap-7 sm:gap-10">
+      <div className="z-10 mt-6 flex w-full translate-y-8 items-center justify-center gap-7 sm:mt-8 sm:translate-y-0 sm:gap-10">
         <RecipeActionButton
           type="skip"
           label="Skip"

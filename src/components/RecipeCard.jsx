@@ -170,7 +170,7 @@ export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDe
         transitionTimingFunction: 'cubic-bezier(0.22, 1, 0.36, 1)',
       }}
     >
-      <div className="relative h-[clamp(270px,37svh,390px)] overflow-hidden bg-[#e8e2d5]">
+      <div className="relative h-[clamp(285px,39svh,410px)] overflow-hidden bg-[#e8e2d5]">
         <img
           src={recipe.images[photoIndex]}
           alt={recipe.name}
