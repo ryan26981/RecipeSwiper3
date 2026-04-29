@@ -1,7 +1,7 @@
 export const TABS = [
-  { id: 'preferences', label: 'Taste' },
-  { id: 'discover', label: 'Discover' },
-  { id: 'library', label: 'Saved' },
+  { id: 'preferences', label: 'Profile' },
+  { id: 'discover', label: 'Explore' },
+  { id: 'library', label: 'Saved Recipes' },
 ];
 
 export const DEFAULT_PROFILE_NAMES = [

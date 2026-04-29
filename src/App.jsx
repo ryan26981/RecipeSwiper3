@@ -138,7 +138,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#f6f7f3] text-slate-950">
+    <div className="min-h-screen overflow-x-hidden bg-[#f7f7f4] text-[#071124]">
       <main>
         {activeTab === 'preferences' && (
           <PreferencesTab
