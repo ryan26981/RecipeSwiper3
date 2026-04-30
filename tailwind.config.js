@@ -4,10 +4,10 @@ export default {
   theme: {
     extend: {
       boxShadow: {
-        soft: '0 18px 60px rgba(20, 28, 38, 0.14)',
-        glass: '0 20px 70px rgba(15, 23, 42, 0.18)',
-        card: '0 30px 90px rgba(15, 23, 42, 0.28)',
-        action: '0 18px 45px rgba(15, 23, 42, 0.16)',
+        soft: '0 18px 52px rgba(20, 28, 38, 0.10)',
+        glass: '0 20px 64px rgba(15, 23, 42, 0.14)',
+        card: '0 24px 70px rgba(15, 23, 42, 0.16), 0 8px 24px rgba(15, 23, 42, 0.08)',
+        action: '0 14px 34px rgba(15, 23, 42, 0.12)',
       },
     },
   },

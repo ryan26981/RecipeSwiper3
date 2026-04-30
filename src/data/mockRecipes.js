@@ -1,4 +1,4 @@
-export const mockRecipes = [
+const rawMockRecipes = [
   {
     id: 'chicken-burrito-bowl',
     name: 'Chicken Burrito Bowl',
@@ -902,3 +902,80 @@ export const mockRecipes = [
     spiceLevel: 'Mild',
   },
 ];
+
+const REAL_IMAGE_SETS = {
+  chickenBowl: [
+    'https://images.unsplash.com/photo-1696950171603-f14dc3147c3f?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1666599028424-e316d4e34aa6?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  ramen: [
+    'https://images.unsplash.com/photo-1501200040150-4d65c94e8f21?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1775889184858-455bd3efc935?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  pita: [
+    'https://images.unsplash.com/photo-1696950171603-f14dc3147c3f?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1666599028424-e316d4e34aa6?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  salmon: [
+    'https://images.unsplash.com/photo-1775889184856-7b2d5caf9a47?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNhcHJlc2V8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1775889184858-455bd3efc935?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNhcHJlc2V8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  pesto: [
+    'https://images.unsplash.com/photo-1743352388509-835796029c79?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1769458313937-b5ad8f84942e?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNhcHJlc2V8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  tacos: [
+    'https://images.unsplash.com/photo-1667338532794-314b44d030a1?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHwxYWZlY2hhcmYlM0RmV3d8fDB8fDB8fHww&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1667338532794-314b44d030a1?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHwxYWZlY2hhcmYlM0RmV3d8fDB8fDB8fHww&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  stirFry: [
+    'https://images.unsplash.com/photo-1738999353105-a19fcffefad2?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1738999353105-a19fcffefad2?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  muffins: [
+    'https://images.unsplash.com/photo-1632498762310-50e4473bce92?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1659881976046-dd0a93667e73?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHwxYWZlY2hhcmYlM0RmV3d8fDB8fDB8fHww&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  caprese: [
+    'https://images.unsplash.com/photo-1769458313937-b5ad8f84942e?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTJ8fGNhcHJlc2V8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1776810250193-f6efd5b38c99?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fGNhcHJlc2V8ZW58MHx8MHx8fDA%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  salad: [
+    'https://images.unsplash.com/photo-1666599028424-e316d4e34aa6?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1666599028424-e316d4e34aa6?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+  pancakes: [
+    'https://images.unsplash.com/photo-1659881976046-dd0a93667e73?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+    'https://images.unsplash.com/photo-1632498762310-50e4473bce92?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000',
+  ],
+};
+
+export const mockRecipes = rawMockRecipes.map((recipe) => {
+  const imageKeyByRecipeId = {
+    'chicken-burrito-bowl': 'chickenBowl',
+    'spicy-ramen': 'ramen',
+    'greek-chicken-pita': 'pita',
+    'turkey-chili': 'chickenBowl',
+    'salmon-rice-bowl': 'salmon',
+    'pesto-pasta': 'pesto',
+    'breakfast-tacos': 'tacos',
+    'teriyaki-chicken-bowl': 'chickenBowl',
+    'veggie-stir-fry': 'stirFry',
+    'protein-pancakes': 'pancakes',
+    'mediterranean-wrap': 'pita',
+    'buffalo-chicken-salad': 'salad',
+    'margherita-flatbread': 'caprese',
+    'shrimp-tacos': 'tacos',
+    'beef-broccoli': 'stirFry',
+    'chicken-caesar-wrap': 'salad',
+    'veggie-fried-rice': 'stirFry',
+    'lentil-curry': 'chickenBowl',
+    'caprese-sandwich': 'caprese',
+    'korean-beef-bowl': 'chickenBowl',
+    'mushroom-quesadillas': 'tacos',
+    'blueberry-oat-muffins': 'muffins',
+  };
+
+  const imageSet = REAL_IMAGE_SETS[imageKeyByRecipeId[recipe.id]];
+  return imageSet ? { ...recipe, images: imageSet } : recipe;
+});

@@ -16,7 +16,7 @@ function getHighlights(recipe, cardStats = []) {
 }
 
 const RECIPE_DESCRIPTIONS = {
-  'greek-chicken-pita': 'Juicy marinated chicken, tzatziki, feta & crisp veggies.',
+  'greek-chicken-pita': 'Marinated chicken, tzatziki, feta, crisp greens.',
 };
 
 const BADGE_STYLES = {
@@ -40,7 +40,7 @@ function getRecipeDescription(recipe) {
 function StatBadge({ icon: Icon, label, tone = 'neutral' }) {
   return (
     <span
-      className={`inline-flex h-7 min-w-0 items-center gap-1 rounded-[8px] px-2 text-[0.64rem] font-black uppercase leading-none min-[380px]:px-2.5 min-[380px]:text-[0.68rem] ${BADGE_STYLES[tone]}`}
+      className={`inline-flex h-7 min-w-0 items-center gap-1.5 rounded-[9px] px-2.5 text-[0.64rem] font-black uppercase leading-none min-[380px]:text-[0.68rem] ${BADGE_STYLES[tone]}`}
     >
       <Icon className="h-3.5 w-3.5 shrink-0 stroke-[2.6]" aria-hidden="true" />
       <span className="truncate">{label}</span>
@@ -53,16 +53,16 @@ function CalorieRing({ recipe }) {
 
   return (
     <div
-      className="relative flex h-20 w-20 shrink-0 items-center justify-center rounded-full sm:h-24 sm:w-24"
+      className="relative flex h-[4.35rem] w-[4.35rem] shrink-0 items-center justify-center rounded-full shadow-[inset_0_0_0_1px_rgba(255,255,255,0.92),0_10px_24px_rgba(51,146,24,0.13)] sm:h-20 sm:w-20"
       style={{
-        background: `conic-gradient(#bde3a6 ${progress}%, #edf5e8 0)`,
+        background: `conic-gradient(#9fd987 ${progress}%, #edf5e8 0)`,
       }}
       aria-label={`${recipe.calories} calories`}
     >
-      <div className="absolute inset-1.5 rounded-full bg-white" />
+      <div className="absolute inset-1.5 rounded-full bg-[#fbfcf9]" />
       <div className="relative text-center">
-        <p className="text-[1.55rem] font-black leading-none text-[#339218] sm:text-[1.85rem]">{recipe.calories}</p>
-        <p className="mt-1 text-[0.72rem] font-black uppercase leading-none text-[#339218] sm:text-[0.85rem]">
+        <p className="text-[1.22rem] font-black leading-none text-[#277c12] sm:text-[1.38rem]">{recipe.calories}</p>
+        <p className="mt-0.5 text-[0.58rem] font-black uppercase leading-none tracking-[0.08em] text-[#4b9b34] sm:text-[0.64rem]">
           Cal
         </p>
       </div>
@@ -160,7 +160,7 @@ export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDe
         startPoint.current = null;
         setDrag({ x: 0, y: 0 });
       }}
-      className={`card-enter relative z-10 mx-auto w-full touch-none overflow-hidden rounded-[28px] bg-white shadow-card ring-1 ring-white/70 ${
+      className={`card-enter relative z-10 mx-auto w-full touch-none overflow-hidden rounded-[30px] bg-white shadow-card ring-1 ring-black/[0.03] ${
         isDragging ? 'transition-transform duration-75' : 'transition-transform duration-300'
       }`}
       style={{
@@ -198,21 +198,21 @@ export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDe
         </div>
       </div>
 
-      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 pb-4 pt-5">
-        <span className="absolute left-1/2 top-2.5 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[#dedede]" />
+      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 pb-5 pt-4 sm:px-6">
+        <span className="absolute left-1/2 top-2 h-1 w-9 -translate-x-1/2 rounded-full bg-[#e7e3dd]" />
 
         <div className="min-w-0">
-          <h2 className="truncate text-[1.32rem] font-black leading-tight text-[#071124] sm:text-[1.6rem]">
+          <h2 className="truncate text-[1.38rem] font-black leading-tight tracking-[-0.035em] text-[#071124] sm:text-[1.65rem]">
             {recipe.name}
           </h2>
-          <p className="mt-0.5 line-clamp-2 text-xs font-bold leading-snug text-[#8c93a8] sm:text-sm">
+          <p className="mt-1 line-clamp-2 text-xs font-semibold leading-snug text-[#687086] sm:text-sm">
             {getRecipeDescription(recipe)}
           </p>
         </div>
 
         <CalorieRing recipe={recipe} />
 
-        <div className="col-span-2 flex min-w-0 flex-nowrap gap-1.5 overflow-hidden min-[380px]:gap-2">
+        <div className="col-span-2 flex min-w-0 flex-nowrap gap-1.5 overflow-hidden border-t border-[#f0eee9] pt-3 min-[380px]:gap-2">
           <StatBadge icon={Clock3} label={`${recipe.timeMinutes} min`} />
           <StatBadge icon={ChefHat} label={recipe.complexity} tone="green" />
           {featuredTag && <StatBadge icon={Dumbbell} label={featuredTag} tone="purple" />}

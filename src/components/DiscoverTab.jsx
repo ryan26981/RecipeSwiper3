@@ -1,8 +1,8 @@
 import {
-  Apple,
   Dumbbell,
   Flame,
   Heart,
+  Info,
   Leaf,
   RotateCcw,
   SlidersHorizontal,
@@ -16,13 +16,13 @@ import { getDiscoverRecipes } from '../utils/recipeFilters.js';
 const ACTION_ICONS = {
   skip: X,
   save: Heart,
-  details: Apple,
+  details: Info,
 };
 
 const ACTION_STYLES = {
-  skip: 'text-[#ff5a43] hover:text-[#f04a34]',
-  save: 'text-[#ff5a43] hover:text-[#f04a34]',
-  details: 'h-20 w-20 text-[#339218] hover:text-[#2b8415]',
+  skip: 'text-[#ff5a43] hover:border-[#ffd1c7] hover:bg-[#fff8f5]',
+  save: 'text-[#ff5a43] hover:border-[#ffd1c7] hover:bg-[#fff8f5]',
+  details: 'text-[#2f8f19] hover:border-[#cfe9c4] hover:bg-[#f7fbf3]',
 };
 
 const CHIP_STYLES = {
@@ -45,20 +45,26 @@ const CHIP_STYLES = {
 };
 
 function RecipeActionButton({ type, label, onClick }) {
-  const Icon = ACTION_ICONS[type] || Apple;
-  const isDetails = type === 'details';
+  const Icon = ACTION_ICONS[type] || Info;
 
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={label}
-      aria-label={label}
-      className={`group flex h-16 w-16 shrink-0 flex-col items-center justify-center rounded-full border border-white/80 bg-white/92 text-sm font-black shadow-action backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 active:scale-[0.97] ${ACTION_STYLES[type]}`}
-    >
-      <Icon className={isDetails ? 'h-10 w-10 stroke-[2]' : 'h-9 w-9 stroke-[2.5]'} aria-hidden="true" />
-      {isDetails && <span className="mt-0.5 text-sm leading-none">{label}</span>}
-    </button>
+    <div className="flex min-w-[4.75rem] flex-col items-center gap-2">
+      <button
+        type="button"
+        onClick={onClick}
+        title={label}
+        aria-label={label}
+        className={`group flex h-16 w-16 shrink-0 items-center justify-center rounded-full border border-white/90 bg-white/95 shadow-action backdrop-blur-xl transition duration-200 hover:-translate-y-0.5 active:scale-[0.96] ${ACTION_STYLES[type]}`}
+      >
+        <Icon
+          className={`h-7 w-7 stroke-[2.4] ${type === 'save' ? 'group-hover:fill-current' : ''}`}
+          aria-hidden="true"
+        />
+      </button>
+      <span className="text-[0.66rem] font-black uppercase tracking-[0.12em] text-[#7b8499]">
+        {label}
+      </span>
+    </div>
   );
 }
 
@@ -92,18 +98,13 @@ function prioritizeReferenceRecipe(recipes) {
 function SmartChip({ chip }) {
   const Icon = chip.icon;
   const style = CHIP_STYLES[chip.tone] || CHIP_STYLES.green;
-  const isBalancedChip = chip.tone === 'coral';
 
   return (
     <span
-      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[16px] border px-2.5 text-[0.66rem] font-bold shadow-[0_12px_30px_rgba(15,23,42,0.07)] backdrop-blur-xl min-[380px]:h-10 min-[380px]:rounded-[18px] min-[380px]:px-3 min-[380px]:text-[0.7rem] sm:h-12 sm:gap-2.5 sm:rounded-[22px] sm:px-4 sm:text-xs ${style.shell}`}
+      className={`inline-flex h-10 basis-[calc((100%-1rem)/3)] shrink-0 items-center justify-center gap-1.5 rounded-[16px] border px-2.5 text-[0.68rem] font-black shadow-[0_10px_24px_rgba(15,23,42,0.055)] backdrop-blur-xl sm:h-11 sm:gap-2 sm:rounded-[18px] sm:px-3 sm:text-xs ${style.shell}`}
     >
-      <Icon className={`h-3.5 w-3.5 shrink-0 stroke-[2.4] sm:h-4.5 sm:w-4.5 ${style.icon}`} aria-hidden="true" />
-      {isBalancedChip ? (
-        <span className="max-w-[4.2rem] whitespace-normal leading-tight sm:max-w-[4.6rem]">{chip.label}</span>
-      ) : (
-        <span className="whitespace-nowrap">{chip.label}</span>
-      )}
+      <Icon className={`h-4 w-4 shrink-0 stroke-[2.3] ${style.icon}`} aria-hidden="true" />
+      <span className="min-w-0 truncate whitespace-nowrap">{chip.label}</span>
     </span>
   );
 }
@@ -157,51 +158,37 @@ export default function DiscoverTab({
   }
 
   const smartChips = getSmartChips(activeRecipe, profile);
-  const initials = profile.name.slice(0, 2).toUpperCase();
-  const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
 
   return (
-    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-28 pt-3 sm:px-5 sm:pt-6">
+    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-28 pt-5 sm:px-5 sm:pt-7">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#dff1f0]/70 blur-3xl" />
         <div className="absolute -right-24 top-48 h-72 w-72 rounded-full bg-[#ffe4dc]/80 blur-3xl" />
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.92)_0%,rgba(247,247,244,0.96)_44%,#f7f7f4_100%)]" />
       </div>
 
-      <header className="relative z-10 flex w-full items-start">
-        <div className="flex w-full min-w-0 items-start gap-2.5 pr-[4.25rem] sm:gap-3 sm:pr-[4.75rem]">
-          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[3px] border-white bg-[#d6eb12] text-base font-black leading-none text-[#071124] shadow-[0_12px_30px_rgba(255,91,65,0.16)] min-[380px]:h-12 min-[380px]:w-12 min-[380px]:text-lg sm:h-16 sm:w-16 sm:text-xl">
-            {initials}
-            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-[2.5px] border-white bg-[#ff5a43] sm:h-5 sm:w-5" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate pt-0.5 text-xs font-bold text-[#a2a8bb] sm:pt-1 sm:text-sm">
-              Good morning, {greetingName}!
-            </p>
-            <h1 className="mt-0.5 max-w-[8.8em] text-[1.22rem] font-black leading-[0.95] text-[#071124] min-[380px]:text-[1.45rem] sm:text-[2rem]">
-              Let's find your
-              <span className="relative mt-1 inline-block text-[#ff5a43]">
-                next favorite
-                <span className="absolute -bottom-1.5 left-2 right-4 h-0.5 rounded-full bg-[#ff5a43] sm:h-1" />
-                <span className="absolute -right-6 top-0 h-0.5 w-4 rotate-[-48deg] rounded-full bg-[#ff5a43] sm:h-1 sm:w-5" />
-                <span className="absolute -right-4 top-4 h-0.5 w-3 rotate-[-18deg] rounded-full bg-[#ff5a43] sm:h-1 sm:w-4" />
-              </span>
-            </h1>
-          </div>
+      <header className="relative z-10 flex w-full items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
+          <p className="text-[0.68rem] font-black uppercase tracking-[0.22em] text-[#a1a7b6]">
+            Explore recipes
+          </p>
+          <h1 className="mt-2 max-w-[8.5em] text-[2.05rem] font-black leading-[0.94] tracking-[-0.055em] text-[#071124] min-[380px]:text-[2.35rem] sm:text-[2.85rem]">
+            Find your next{' '}
+            <span className="relative inline-block text-[#ff5a43]">
+              favorite
+              <span className="absolute -bottom-1 left-1 right-1 h-1 rounded-full bg-[#ff5a43]/28" />
+            </span>
+          </h1>
         </div>
 
-        <div className="absolute right-0 top-0 flex min-w-[54px] shrink-0 flex-col items-center rounded-[16px] bg-[#fff0ed] px-1.5 py-2 text-center shadow-[0_14px_32px_rgba(255,91,65,0.1)] min-[380px]:min-w-[58px] min-[380px]:rounded-[18px] min-[380px]:px-2 sm:min-w-[64px] sm:px-2.5 sm:py-2.5">
-          <div className="flex items-center gap-1.5 text-[#071124]">
-            <Flame className="h-4 w-4 fill-[#ff5a43] text-[#ff5a43] min-[380px]:h-4.5 min-[380px]:w-4.5 sm:h-5 sm:w-5" aria-hidden="true" />
-            <span className="text-lg font-black leading-none min-[380px]:text-xl sm:text-2xl">{discoverRecipes.length}</span>
-          </div>
-          <p className="mt-0.5 text-[0.5rem] font-bold uppercase leading-none text-[#cf4b34] min-[380px]:text-[0.56rem] sm:text-[0.64rem]">
-            Stack left
-          </p>
+        <div className="mt-2 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/80 bg-white/70 px-3 py-2 text-[#7b8499] shadow-[0_10px_26px_rgba(15,23,42,0.06)] backdrop-blur-xl">
+          <Flame className="h-3.5 w-3.5 fill-[#ff5a43] text-[#ff5a43]" aria-hidden="true" />
+          <span className="text-sm font-black leading-none text-[#071124]">{discoverRecipes.length}</span>
+          <span className="text-[0.62rem] font-black uppercase tracking-[0.12em]">left</span>
         </div>
       </header>
 
-      <div className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-5 sm:mt-5 sm:gap-2.5 sm:px-5">
+      <div className="no-scrollbar -mx-4 mt-5 flex snap-x gap-2 overflow-x-auto px-4 pb-1 sm:-mx-5 sm:mt-6 sm:px-5">
         {smartChips.map((chip) => (
           <SmartChip key={chip.label} chip={chip} />
         ))}
@@ -220,10 +207,10 @@ export default function DiscoverTab({
         />
       </div>
 
-      <div className="z-10 mt-6 flex w-full translate-y-8 items-center justify-center gap-7 sm:mt-8 sm:translate-y-0 sm:gap-10">
+      <div className="z-10 mt-5 flex w-full translate-y-6 items-start justify-center gap-5 sm:mt-7 sm:translate-y-0 sm:gap-8">
         <RecipeActionButton
           type="skip"
-          label="Skip"
+          label="Reject"
           onClick={() => onHideRecipe(activeRecipe.id)}
         />
         <RecipeActionButton
