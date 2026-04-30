@@ -13,6 +13,7 @@ export function createDefaultProfile(name, id) {
     preferences: structuredClone(DEFAULT_PREFERENCES),
     savedRecipes: [],
     hiddenRecipeIds: [],
+    dismissedSuggestionIds: [],
     folders: [...DEFAULT_FOLDERS],
   };
 }
@@ -43,6 +44,9 @@ function normalizeProfile(profile) {
     },
     savedRecipes: Array.isArray(profile?.savedRecipes) ? profile.savedRecipes : [],
     hiddenRecipeIds: Array.isArray(profile?.hiddenRecipeIds) ? profile.hiddenRecipeIds : [],
+    dismissedSuggestionIds: Array.isArray(profile?.dismissedSuggestionIds)
+      ? profile.dismissedSuggestionIds
+      : [],
     folders: profile?.folders?.length ? profile.folders : fallback.folders,
   };
 }

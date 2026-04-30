@@ -84,6 +84,7 @@ export default function App() {
             savedAt: Date.now(),
             favorite: false,
             folder: defaultFolder,
+            plannedDay: '',
           },
           ...profile.savedRecipes,
         ],
@@ -125,6 +126,7 @@ export default function App() {
     updateActiveProfile((profile) => ({
       ...profile,
       savedRecipes: profile.savedRecipes.filter((savedRecipe) => savedRecipe.recipeId !== recipeId),
+      hiddenRecipeIds: profile.hiddenRecipeIds.filter((id) => id !== recipeId),
     }));
   }
 
@@ -135,6 +137,52 @@ export default function App() {
         savedRecipe.recipeId === recipeId ? { ...savedRecipe, folder } : savedRecipe,
       ),
     }));
+  }
+
+  function planRecipe(recipeId, plannedDay) {
+    updateActiveProfile((profile) => {
+      const defaultFolder = profile.folders.includes('Want to Try')
+        ? 'Want to Try'
+        : profile.folders[0];
+      const alreadySaved = profile.savedRecipes.some((savedRecipe) => savedRecipe.recipeId === recipeId);
+
+      if (!alreadySaved) {
+        return {
+          ...profile,
+          savedRecipes: [
+            {
+              recipeId,
+              savedAt: Date.now(),
+              favorite: false,
+              folder: defaultFolder,
+              plannedDay,
+            },
+            ...profile.savedRecipes,
+          ],
+          hiddenRecipeIds: profile.hiddenRecipeIds.filter((id) => id !== recipeId),
+          dismissedSuggestionIds: profile.dismissedSuggestionIds.filter((id) => id !== recipeId),
+        };
+      }
+
+      return {
+        ...profile,
+        savedRecipes: profile.savedRecipes.map((savedRecipe) =>
+          savedRecipe.recipeId === recipeId ? { ...savedRecipe, plannedDay } : savedRecipe,
+        ),
+        dismissedSuggestionIds: profile.dismissedSuggestionIds.filter((id) => id !== recipeId),
+      };
+    });
+  }
+
+  function dismissSuggestion(recipeId) {
+    updateActiveProfile((profile) => {
+      if (profile.dismissedSuggestionIds.includes(recipeId)) return profile;
+
+      return {
+        ...profile,
+        dismissedSuggestionIds: [recipeId, ...profile.dismissedSuggestionIds],
+      };
+    });
   }
 
   return (
@@ -171,6 +219,8 @@ export default function App() {
             onToggleFavorite={toggleFavorite}
             onDeleteSavedRecipe={deleteSavedRecipe}
             onMoveRecipeToFolder={moveRecipeToFolder}
+            onPlanRecipe={planRecipe}
+            onDismissSuggestion={dismissSuggestion}
           />
         )}
       </main>

@@ -96,11 +96,11 @@ function SmartChip({ chip }) {
 
   return (
     <span
-      className={`inline-flex h-11 shrink-0 items-center gap-2 rounded-[20px] border px-3 text-[0.72rem] font-bold shadow-[0_16px_38px_rgba(15,23,42,0.08)] backdrop-blur-xl min-[380px]:h-12 min-[380px]:rounded-[22px] min-[380px]:px-3.5 min-[380px]:text-xs sm:h-14 sm:gap-3 sm:rounded-[24px] sm:px-5 sm:text-sm ${style.shell}`}
+      className={`inline-flex h-9 shrink-0 items-center gap-1.5 rounded-[16px] border px-2.5 text-[0.66rem] font-bold shadow-[0_12px_30px_rgba(15,23,42,0.07)] backdrop-blur-xl min-[380px]:h-10 min-[380px]:rounded-[18px] min-[380px]:px-3 min-[380px]:text-[0.7rem] sm:h-12 sm:gap-2.5 sm:rounded-[22px] sm:px-4 sm:text-xs ${style.shell}`}
     >
-      <Icon className={`h-4 w-4 shrink-0 stroke-[2.4] sm:h-5 sm:w-5 ${style.icon}`} aria-hidden="true" />
+      <Icon className={`h-3.5 w-3.5 shrink-0 stroke-[2.4] sm:h-4.5 sm:w-4.5 ${style.icon}`} aria-hidden="true" />
       {isBalancedChip ? (
-        <span className="max-w-[4.7rem] whitespace-normal leading-tight">{chip.label}</span>
+        <span className="max-w-[4.2rem] whitespace-normal leading-tight sm:max-w-[4.6rem]">{chip.label}</span>
       ) : (
         <span className="whitespace-nowrap">{chip.label}</span>
       )}
@@ -161,7 +161,7 @@ export default function DiscoverTab({
   const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
 
   return (
-    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-36 pt-5 sm:px-5 sm:pt-8">
+    <div className="relative isolate mx-auto flex min-h-screen w-full max-w-[480px] flex-col overflow-hidden px-4 pb-28 pt-3 sm:px-5 sm:pt-6">
       <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
         <div className="absolute -left-20 top-10 h-72 w-72 rounded-full bg-[#dff1f0]/70 blur-3xl" />
         <div className="absolute -right-24 top-48 h-72 w-72 rounded-full bg-[#ffe4dc]/80 blur-3xl" />
@@ -169,45 +169,45 @@ export default function DiscoverTab({
       </div>
 
       <header className="relative z-10 flex w-full items-start">
-        <div className="flex w-full min-w-0 items-start gap-3 sm:gap-4">
-          <div className="relative flex h-[52px] w-[52px] shrink-0 items-center justify-center rounded-full border-4 border-white bg-[#d6eb12] text-lg font-black leading-none text-[#071124] shadow-[0_16px_38px_rgba(255,91,65,0.18)] min-[380px]:h-16 min-[380px]:w-16 min-[380px]:text-xl sm:h-[76px] sm:w-[76px] sm:text-[1.45rem]">
+        <div className="flex w-full min-w-0 items-start gap-2.5 pr-[4.25rem] sm:gap-3 sm:pr-[4.75rem]">
+          <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full border-[3px] border-white bg-[#d6eb12] text-base font-black leading-none text-[#071124] shadow-[0_12px_30px_rgba(255,91,65,0.16)] min-[380px]:h-12 min-[380px]:w-12 min-[380px]:text-lg sm:h-16 sm:w-16 sm:text-xl">
             {initials}
-            <span className="absolute bottom-0 right-0 h-5 w-5 rounded-full border-[3px] border-white bg-[#ff5a43] sm:h-6 sm:w-6" />
+            <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full border-[2.5px] border-white bg-[#ff5a43] sm:h-5 sm:w-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate pt-1 text-sm font-bold text-[#a2a8bb] sm:pt-2 sm:text-base">
+            <p className="truncate pt-0.5 text-xs font-bold text-[#a2a8bb] sm:pt-1 sm:text-sm">
               Good morning, {greetingName}!
             </p>
-            <h1 className="mt-1 max-w-[8.9em] text-[1.42rem] font-black leading-[0.95] text-[#071124] min-[380px]:text-[1.68rem] sm:text-[2.35rem]">
+            <h1 className="mt-0.5 max-w-[8.8em] text-[1.22rem] font-black leading-[0.95] text-[#071124] min-[380px]:text-[1.45rem] sm:text-[2rem]">
               Let's find your
               <span className="relative mt-1 inline-block text-[#ff5a43]">
                 next favorite
-                <span className="absolute -bottom-2 left-2 right-4 h-1 rounded-full bg-[#ff5a43]" />
-                <span className="absolute -right-8 top-0 h-1 w-5 rotate-[-48deg] rounded-full bg-[#ff5a43]" />
-                <span className="absolute -right-5 top-5 h-1 w-4 rotate-[-18deg] rounded-full bg-[#ff5a43]" />
+                <span className="absolute -bottom-1.5 left-2 right-4 h-0.5 rounded-full bg-[#ff5a43] sm:h-1" />
+                <span className="absolute -right-6 top-0 h-0.5 w-4 rotate-[-48deg] rounded-full bg-[#ff5a43] sm:h-1 sm:w-5" />
+                <span className="absolute -right-4 top-4 h-0.5 w-3 rotate-[-18deg] rounded-full bg-[#ff5a43] sm:h-1 sm:w-4" />
               </span>
             </h1>
           </div>
         </div>
 
-        <div className="absolute right-0 top-0 flex min-w-[62px] shrink-0 flex-col items-center rounded-[20px] bg-[#fff0ed] px-2 py-2.5 text-center shadow-[0_18px_40px_rgba(255,91,65,0.12)] min-[380px]:min-w-[68px] min-[380px]:rounded-[22px] min-[380px]:px-2.5 min-[380px]:py-3 sm:min-w-[72px] sm:px-3">
-          <div className="flex items-center gap-2 text-[#071124]">
-            <Flame className="h-5 w-5 fill-[#ff5a43] text-[#ff5a43] min-[380px]:h-6 min-[380px]:w-6" aria-hidden="true" />
-            <span className="text-xl font-black leading-none min-[380px]:text-2xl">{discoverRecipes.length}</span>
+        <div className="absolute right-0 top-0 flex min-w-[54px] shrink-0 flex-col items-center rounded-[16px] bg-[#fff0ed] px-1.5 py-2 text-center shadow-[0_14px_32px_rgba(255,91,65,0.1)] min-[380px]:min-w-[58px] min-[380px]:rounded-[18px] min-[380px]:px-2 sm:min-w-[64px] sm:px-2.5 sm:py-2.5">
+          <div className="flex items-center gap-1.5 text-[#071124]">
+            <Flame className="h-4 w-4 fill-[#ff5a43] text-[#ff5a43] min-[380px]:h-4.5 min-[380px]:w-4.5 sm:h-5 sm:w-5" aria-hidden="true" />
+            <span className="text-lg font-black leading-none min-[380px]:text-xl sm:text-2xl">{discoverRecipes.length}</span>
           </div>
-          <p className="mt-1 text-[0.58rem] font-bold uppercase leading-none text-[#cf4b34] min-[380px]:text-[0.68rem]">
+          <p className="mt-0.5 text-[0.5rem] font-bold uppercase leading-none text-[#cf4b34] min-[380px]:text-[0.56rem] sm:text-[0.64rem]">
             Stack left
           </p>
         </div>
       </header>
 
-      <div className="no-scrollbar -mx-4 mt-6 flex gap-2.5 overflow-x-auto px-4 pb-1 sm:-mx-5 sm:mt-7 sm:gap-3 sm:px-5">
+      <div className="no-scrollbar -mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:-mx-5 sm:mt-5 sm:gap-2.5 sm:px-5">
         {smartChips.map((chip) => (
           <SmartChip key={chip.label} chip={chip} />
         ))}
       </div>
 
-      <div className="relative mt-6 w-full sm:mt-7">
+      <div className="relative mt-4 w-full sm:mt-5">
         <div className="absolute inset-x-7 -bottom-7 h-28 rotate-[-4deg] rounded-[28px] bg-white/70 shadow-soft" />
         <div className="absolute inset-x-4 -bottom-5 h-28 rotate-[2deg] rounded-[28px] bg-white/86 shadow-soft" />
         <RecipeCard

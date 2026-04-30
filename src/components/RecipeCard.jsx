@@ -40,9 +40,9 @@ function getRecipeDescription(recipe) {
 function StatBadge({ icon: Icon, label, tone = 'neutral' }) {
   return (
     <span
-      className={`inline-flex h-8 min-w-0 items-center gap-1.5 rounded-[9px] px-3 text-[0.75rem] font-black uppercase leading-none ${BADGE_STYLES[tone]}`}
+      className={`inline-flex h-7 min-w-0 items-center gap-1 rounded-[8px] px-2 text-[0.64rem] font-black uppercase leading-none min-[380px]:px-2.5 min-[380px]:text-[0.68rem] ${BADGE_STYLES[tone]}`}
     >
-      <Icon className="h-4 w-4 shrink-0 stroke-[2.6]" aria-hidden="true" />
+      <Icon className="h-3.5 w-3.5 shrink-0 stroke-[2.6]" aria-hidden="true" />
       <span className="truncate">{label}</span>
     </span>
   );
@@ -198,25 +198,25 @@ export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDe
         </div>
       </div>
 
-      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] gap-4 px-5 pb-5 pt-7">
-        <span className="absolute left-1/2 top-3 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[#dedede]" />
+      <div className="relative grid grid-cols-[minmax(0,1fr)_auto] gap-x-3 gap-y-3 px-5 pb-4 pt-5">
+        <span className="absolute left-1/2 top-2.5 h-1.5 w-10 -translate-x-1/2 rounded-full bg-[#dedede]" />
 
         <div className="min-w-0">
-          <h2 className="truncate text-[1.45rem] font-black leading-tight text-[#071124] sm:text-[1.75rem]">
+          <h2 className="truncate text-[1.32rem] font-black leading-tight text-[#071124] sm:text-[1.6rem]">
             {recipe.name}
           </h2>
-          <p className="mt-1 truncate text-sm font-bold text-[#8c93a8]">
+          <p className="mt-0.5 line-clamp-2 text-xs font-bold leading-snug text-[#8c93a8] sm:text-sm">
             {getRecipeDescription(recipe)}
           </p>
-
-          <div className="mt-4 flex min-w-0 flex-wrap gap-2">
-            <StatBadge icon={Clock3} label={`${recipe.timeMinutes} min`} />
-            <StatBadge icon={ChefHat} label={recipe.complexity} tone="green" />
-            {featuredTag && <StatBadge icon={Dumbbell} label={featuredTag} tone="purple" />}
-          </div>
         </div>
 
         <CalorieRing recipe={recipe} />
+
+        <div className="col-span-2 flex min-w-0 flex-nowrap gap-1.5 overflow-hidden min-[380px]:gap-2">
+          <StatBadge icon={Clock3} label={`${recipe.timeMinutes} min`} />
+          <StatBadge icon={ChefHat} label={recipe.complexity} tone="green" />
+          {featuredTag && <StatBadge icon={Dumbbell} label={featuredTag} tone="purple" />}
+        </div>
       </div>
     </article>
   );
