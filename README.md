@@ -1,7 +1,7 @@
 # RecipeSwipe
 
-A mobile-first recipe discovery MVP built with plain React, Vite, Tailwind CSS, mock data, and
-localStorage persistence.
+A mobile-first recipe discovery MVP built with plain React, Vite, Tailwind CSS, TheMealDB-backed
+recipe data, and localStorage persistence.
 
 ## Run locally
 

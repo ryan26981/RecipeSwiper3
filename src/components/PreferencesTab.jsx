@@ -19,7 +19,6 @@ import {
   UsersRound,
   Utensils,
 } from 'lucide-react';
-import { mockRecipes } from '../data/mockRecipes.js';
 import {
   CLEANUP_LEVELS,
   COMPLEXITIES,
@@ -282,10 +281,11 @@ export default function PreferencesTab({
   onSwitchProfile,
   onCreateProfile,
   onUpdatePreferences,
+  recipes,
 }) {
   const preferences = profile.preferences;
   const favoriteCount = profile.savedRecipes.filter((savedRecipe) => savedRecipe.favorite).length;
-  const stackLeft = getDiscoverRecipes(mockRecipes, profile).length;
+  const stackLeft = getDiscoverRecipes(recipes, profile).length;
   const initials = profile.name.slice(0, 2).toUpperCase();
   const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
 

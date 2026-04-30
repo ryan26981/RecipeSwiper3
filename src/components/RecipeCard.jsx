@@ -70,7 +70,13 @@ function CalorieRing({ recipe }) {
   );
 }
 
-export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDetails }) {
+export default function RecipeCard({
+  recipe,
+  cardStats,
+  onSave,
+  onHide,
+  onOpenDetails,
+}) {
   const [photoIndex, setPhotoIndex] = useState(0);
   const [drag, setDrag] = useState({ x: 0, y: 0 });
   const startPoint = useRef(null);
@@ -202,7 +208,7 @@ export default function RecipeCard({ recipe, cardStats, onSave, onHide, onOpenDe
         <span className="absolute left-1/2 top-2 h-1 w-9 -translate-x-1/2 rounded-full bg-[#e7e3dd]" />
 
         <div className="min-w-0">
-          <h2 className="truncate text-[1.38rem] font-black leading-tight tracking-[-0.035em] text-[#071124] sm:text-[1.65rem]">
+          <h2 className="line-clamp-2 text-[1.22rem] font-bold leading-[1.05] tracking-[-0.01em] text-[#071124] sm:text-[1.48rem]">
             {recipe.name}
           </h2>
           <p className="mt-1 line-clamp-2 text-xs font-semibold leading-snug text-[#687086] sm:text-sm">

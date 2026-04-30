@@ -84,17 +84,6 @@ function getSmartChips(recipe, profile) {
     .slice(0, 4);
 }
 
-function prioritizeReferenceRecipe(recipes) {
-  const referenceIndex = recipes.findIndex((recipe) => recipe.id === 'greek-chicken-pita');
-  if (referenceIndex <= 0) return recipes;
-
-  return [
-    recipes[referenceIndex],
-    ...recipes.slice(0, referenceIndex),
-    ...recipes.slice(referenceIndex + 1),
-  ];
-}
-
 function SmartChip({ chip }) {
   const Icon = chip.icon;
   const style = CHIP_STYLES[chip.tone] || CHIP_STYLES.green;
@@ -118,7 +107,7 @@ export default function DiscoverTab({
   onResetHidden,
   onGoToPreferences,
 }) {
-  const discoverRecipes = prioritizeReferenceRecipe(getDiscoverRecipes(recipes, profile));
+  const discoverRecipes = getDiscoverRecipes(recipes, profile);
   const activeRecipe = discoverRecipes[0];
 
   if (!activeRecipe) {

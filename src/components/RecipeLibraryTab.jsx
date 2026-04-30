@@ -16,7 +16,7 @@ import {
 import { cx } from './ui.jsx';
 
 const FILTERS = ['All', 'Planned', 'Want to Try', 'Favorites'];
-const SHOWCASE_IDS = ['turkey-chili', 'greek-chicken-pita', 'chicken-burrito-bowl', 'mediterranean-wrap'];
+const SHOWCASE_COUNT = 4;
 const WEEK_DAYS = [
   { day: 'Mon', full: 'Monday', date: '19' },
   { day: 'Tue', full: 'Tuesday', date: '20' },
@@ -52,7 +52,7 @@ function makeFallbackSaved(recipe, index) {
     recipe,
     plannedDay: '',
     cookedCount: 0,
-    displayName: recipe.id === 'mediterranean-wrap' ? 'Mediterranean Quinoa Bowl' : recipe.name,
+    displayName: recipe.name,
     isShowcase: true,
   };
 }
@@ -70,8 +70,7 @@ function getRows(profile, recipes) {
 
   if (savedRows.length) return savedRows;
 
-  return SHOWCASE_IDS.map((id, index) => recipeById.get(id))
-    .filter(Boolean)
+  return recipes.slice(0, SHOWCASE_COUNT)
     .map(makeFallbackSaved);
 }
 
@@ -91,6 +90,10 @@ function getFollowingDay(currentDay) {
 }
 
 function getSuggestion(recipes, profile) {
+  if (!recipes.length) {
+    return null;
+  }
+
   const dismissedIds = new Set(profile.dismissedSuggestionIds || []);
   const plannedIds = new Set(
     profile.savedRecipes
@@ -98,14 +101,15 @@ function getSuggestion(recipes, profile) {
       .map((savedRecipe) => savedRecipe.recipeId),
   );
   const recipe =
-    recipes.find((item) => !dismissedIds.has(item.id) && !plannedIds.has(item.id) && item.id === 'mediterranean-wrap') ||
     recipes.find((item) => !dismissedIds.has(item.id) && !plannedIds.has(item.id) && item.cuisine === 'Mediterranean') ||
     recipes.find((item) => !dismissedIds.has(item.id) && !plannedIds.has(item.id)) ||
     recipes[0];
 
+  if (!recipe) return null;
+
   return {
     ...recipe,
-    displayName: recipe.id === 'mediterranean-wrap' ? 'Mediterranean Quinoa Bowl' : recipe.name,
+    displayName: recipe.name,
     ingredientMatch: getIngredientMatch(recipe),
   };
 }
@@ -187,6 +191,7 @@ export default function RecipeLibraryTab({
   }
 
   function handleSuggestionPlan() {
+    if (!suggestion) return;
     onPlanRecipe(suggestion.id, getNextPlanningDay(plannedRows));
   }
 
@@ -226,12 +231,18 @@ export default function RecipeLibraryTab({
         />
       </label>
 
-      <CookTonightCard
-        recipe={suggestion}
-        onOpenDetails={openRecipe}
-        onPlan={handleSuggestionPlan}
-        onDismiss={() => onDismissSuggestion(suggestion.id)}
-      />
+        {suggestion ? (
+          <CookTonightCard
+            recipe={suggestion}
+            onOpenDetails={openRecipe}
+            onPlan={handleSuggestionPlan}
+            onDismiss={() => onDismissSuggestion(suggestion.id)}
+          />
+        ) : (
+          <div className="mt-3 rounded-[16px] border border-[#e1e6ef] bg-white p-4 text-sm font-semibold text-[#68779e] shadow-[0_14px_38px_rgba(15,23,42,0.045)]">
+            No recipe suggestions are available yet.
+          </div>
+        )}
       <WeekPlanner
         plannerRef={plannerRef}
         plannedRows={plannedRows}

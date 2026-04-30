@@ -5,6 +5,7 @@ import PreferencesTab from './components/PreferencesTab.jsx';
 import RecipeDetailSheet from './components/RecipeDetailSheet.jsx';
 import RecipeLibraryTab from './components/RecipeLibraryTab.jsx';
 import { mockRecipes } from './data/mockRecipes.js';
+import { loadRecipeCatalog } from './data/themealdbRecipes.js';
 import { TABS } from './utils/constants.js';
 import { createDefaultProfile, loadAppData, saveAppData } from './utils/storage.js';
 
@@ -12,6 +13,8 @@ export default function App() {
   const [appData, setAppData] = useState(loadAppData);
   const [activeTab, setActiveTab] = useState('discover');
   const [selectedRecipe, setSelectedRecipe] = useState(null);
+  const [recipes, setRecipes] = useState([]);
+  const [recipeCatalogStatus, setRecipeCatalogStatus] = useState('loading');
 
   const activeProfile = useMemo(() => {
     return (
@@ -24,6 +27,27 @@ export default function App() {
     // Persist the whole profile tree so each profile keeps its own library and settings.
     saveAppData(appData);
   }, [appData]);
+
+  useEffect(() => {
+    let isActive = true;
+
+    loadRecipeCatalog()
+      .then((catalog) => {
+        if (!isActive) return;
+        const nextRecipes = catalog.length ? catalog : mockRecipes;
+        setRecipes(nextRecipes);
+        setRecipeCatalogStatus(catalog.length ? 'ready' : 'fallback');
+      })
+      .catch(() => {
+        if (!isActive) return;
+        setRecipes(mockRecipes);
+        setRecipeCatalogStatus('fallback');
+      });
+
+    return () => {
+      isActive = false;
+    };
+  }, []);
 
   function updateActiveProfile(updateProfile) {
     setAppData((currentData) => ({
@@ -188,7 +212,21 @@ export default function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f7f7f4] text-[#071124]">
       <main>
-        {activeTab === 'preferences' && (
+        {recipeCatalogStatus === 'loading' ? (
+          <div className="flex min-h-screen items-center justify-center px-6 text-center">
+            <div className="max-w-sm">
+              <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ff5a43]">
+                Loading recipes
+              </p>
+              <h1 className="mt-3 text-3xl font-black text-[#071124]">Free catalog setup</h1>
+              <p className="mt-3 text-sm leading-6 text-[#6f7d99]">
+                Pulling recipes from TheMealDB before the app becomes interactive.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <>
+            {activeTab === 'preferences' && (
           <PreferencesTab
             profile={activeProfile}
             profiles={appData.profiles}
@@ -196,12 +234,13 @@ export default function App() {
             onSwitchProfile={switchProfile}
             onCreateProfile={createProfile}
             onUpdatePreferences={updatePreferences}
+            recipes={recipes}
           />
         )}
 
-        {activeTab === 'discover' && (
+            {activeTab === 'discover' && (
           <DiscoverTab
-            recipes={mockRecipes}
+            recipes={recipes}
             profile={activeProfile}
             onSaveRecipe={saveRecipe}
             onHideRecipe={hideRecipe}
@@ -211,10 +250,10 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'library' && (
+            {activeTab === 'library' && (
           <RecipeLibraryTab
             profile={activeProfile}
-            recipes={mockRecipes}
+            recipes={recipes}
             onOpenDetails={setSelectedRecipe}
             onToggleFavorite={toggleFavorite}
             onDeleteSavedRecipe={deleteSavedRecipe}
@@ -223,10 +262,14 @@ export default function App() {
             onDismissSuggestion={dismissSuggestion}
           />
         )}
+          </>
+        )}
       </main>
 
       <RecipeDetailSheet recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
-      <BottomNav tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      {recipeCatalogStatus !== 'loading' && (
+        <BottomNav tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
+      )}
     </div>
   );
 }

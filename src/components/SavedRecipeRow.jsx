@@ -29,7 +29,9 @@ export default function SavedRecipeRow({
             onClick={() => onOpenDetails(recipe)}
             className="min-w-0 text-left"
           >
-            <h3 className="truncate text-lg font-black leading-tight text-slate-950">{recipe.name}</h3>
+            <h3 className="line-clamp-2 text-[0.98rem] font-semibold leading-[1.08] tracking-[-0.01em] text-slate-950">
+              {recipe.name}
+            </h3>
             <p className="mt-1 flex items-center gap-1.5 text-sm font-bold text-slate-500">
               <Clock3 className="h-4 w-4" aria-hidden="true" />
               {recipe.timeMinutes} min
