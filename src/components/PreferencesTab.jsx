@@ -219,15 +219,15 @@ function ProfileMiniForm({ profiles, activeProfileId, onSwitchProfile, onCreateP
   }
 
   return (
-    <section className="border-t border-[#eceef3] pt-5">
+    <section className="border-t border-[#eceef3] pt-4">
       <SectionHeader icon={UsersRound} tone="purple" title="Profiles" />
-      <div className="grid gap-2 min-[420px]:grid-cols-[1fr_auto]">
-        <label className="flex min-h-11 items-center gap-2 rounded-[16px] border border-[#e7e8ec] bg-white px-3 shadow-[0_8px_22px_rgba(15,23,42,0.05)] sm:min-h-12 sm:rounded-[18px]">
-          <UserRound className="h-4 w-4 shrink-0 text-[#8b93a7] sm:h-[18px] sm:w-[18px]" aria-hidden="true" />
+      <div className="grid gap-1.5 min-[420px]:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <label className="flex min-h-9 items-center gap-1.5 rounded-xl border border-[#e7e8ec] bg-white px-2.5 shadow-[0_6px_16px_rgba(15,23,42,0.04)] sm:min-h-10">
+          <UserRound className="h-3.5 w-3.5 shrink-0 text-[#8b93a7] sm:h-4 sm:w-4" aria-hidden="true" />
           <select
             value={activeProfileId}
             onChange={(event) => onSwitchProfile(event.target.value)}
-            className="min-w-0 flex-1 bg-transparent text-[0.82rem] font-black text-[#071124] outline-none sm:text-sm"
+            className="min-w-0 flex-1 bg-transparent text-[0.78rem] font-black text-[#071124] outline-none sm:text-[0.82rem]"
           >
             {profiles.map((profile) => (
               <option key={profile.id} value={profile.id}>
@@ -236,22 +236,22 @@ function ProfileMiniForm({ profiles, activeProfileId, onSwitchProfile, onCreateP
             ))}
           </select>
         </label>
-        <form onSubmit={submitProfile} className="flex gap-2">
-          <label className="flex min-h-11 min-w-0 flex-1 items-center rounded-[16px] border border-[#e7e8ec] bg-white px-3 shadow-[0_8px_22px_rgba(15,23,42,0.05)] sm:min-h-12 sm:rounded-[18px]">
+        <form onSubmit={submitProfile} className="flex gap-1.5">
+          <label className="flex min-h-9 min-w-0 flex-1 items-center rounded-xl border border-[#e7e8ec] bg-white px-2.5 shadow-[0_6px_16px_rgba(15,23,42,0.04)] sm:min-h-10">
             <input
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Create profile"
-              className="min-w-0 flex-1 bg-transparent text-[0.82rem] font-bold text-[#071124] outline-none placeholder:text-[#9ca4b8] sm:text-sm"
+              className="min-w-0 flex-1 bg-transparent text-[0.78rem] font-bold text-[#071124] outline-none placeholder:text-[#9ca4b8] sm:text-[0.82rem]"
             />
           </label>
           <button
             type="submit"
             title="Add profile"
             aria-label="Add profile"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-[#071124] text-white shadow-action sm:h-12 sm:w-12 sm:rounded-[18px]"
+            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#071124] text-white shadow-action sm:h-10 sm:w-10"
           >
-            <Plus className="h-5 w-5" aria-hidden="true" />
+            <Plus className="h-4 w-4" aria-hidden="true" />
           </button>
         </form>
       </div>

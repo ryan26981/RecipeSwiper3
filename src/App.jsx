@@ -1,13 +1,70 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import BottomNav from './components/BottomNav.jsx';
 import DiscoverTab from './components/DiscoverTab.jsx';
 import PreferencesTab from './components/PreferencesTab.jsx';
 import RecipeDetailSheet from './components/RecipeDetailSheet.jsx';
 import RecipeLibraryTab from './components/RecipeLibraryTab.jsx';
 import { mockRecipes } from './data/mockRecipes.js';
-import { loadRecipeCatalog } from './data/themealdbRecipes.js';
+import { loadRecipeCatalog } from './data/spoonacularRecipes.js';
 import { TABS } from './utils/constants.js';
 import { createDefaultProfile, loadAppData, saveAppData } from './utils/storage.js';
+
+function mergeRecipeLists(primaryRecipes, secondaryRecipes = []) {
+  const recipesById = new Map();
+
+  [...primaryRecipes, ...secondaryRecipes].forEach((recipe) => {
+    if (!recipesById.has(recipe.id)) {
+      recipesById.set(recipe.id, recipe);
+    }
+  });
+
+  return Array.from(recipesById.values());
+}
+
+function getRecipeCatalogErrorMessage(error) {
+  if (error?.name === 'AbortError') {
+    return 'Spoonacular took too long to respond, so the built-in catalog is active.';
+  }
+
+  const message = error instanceof Error ? error.message : '';
+  if (/402|quota/i.test(message)) {
+    return 'Spoonacular quota is unavailable, so the built-in catalog is active.';
+  }
+  if (/api key|SPOONACULAR_API_KEY/i.test(message)) {
+    return 'Add SPOONACULAR_API_KEY to .env to load live Spoonacular recipes.';
+  }
+
+  return message || 'Spoonacular recipes could not be loaded, so the built-in catalog is active.';
+}
+
+function CatalogStatusNotice({ status, message }) {
+  if (!['refreshing', 'error'].includes(status)) return null;
+
+  const styles = {
+    refreshing: {
+      shell: 'border-[#dde9ff] bg-[#f6f9ff] text-[#2453a5]',
+      label: 'Loading recipes',
+      copy: 'Refreshing Spoonacular matches for this profile.',
+    },
+    error: {
+      shell: 'border-[#ffd3cc] bg-[#fff4f1] text-[#b73928]',
+      label: 'Recipe service',
+      copy: 'Spoonacular recipes could not be loaded, so the built-in catalog is active.',
+    },
+  };
+  const style = styles[status];
+
+  return (
+    <div className="mx-auto w-full max-w-[480px] px-4 pt-3">
+      <div className={`rounded-2xl border px-4 py-3 shadow-[0_12px_30px_rgba(15,23,42,0.06)] ${style.shell}`}>
+        <p className="text-[0.68rem] font-black uppercase tracking-[0.14em]">
+          {style.label}
+        </p>
+        <p className="mt-1 text-xs font-bold leading-5">{message || style.copy}</p>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
   const [appData, setAppData] = useState(loadAppData);
@@ -15,6 +72,8 @@ export default function App() {
   const [selectedRecipe, setSelectedRecipe] = useState(null);
   const [recipes, setRecipes] = useState([]);
   const [recipeCatalogStatus, setRecipeCatalogStatus] = useState('loading');
+  const [recipeCatalogMessage, setRecipeCatalogMessage] = useState('');
+  const hasLoadedRecipeCatalog = useRef(false);
 
   const activeProfile = useMemo(() => {
     return (
@@ -22,6 +81,10 @@ export default function App() {
       appData.profiles[0]
     );
   }, [appData.activeProfileId, appData.profiles]);
+  const activePreferencesKey = useMemo(
+    () => JSON.stringify(activeProfile.preferences),
+    [activeProfile.preferences],
+  );
 
   useEffect(() => {
     // Persist the whole profile tree so each profile keeps its own library and settings.
@@ -31,23 +94,37 @@ export default function App() {
   useEffect(() => {
     let isActive = true;
 
-    loadRecipeCatalog()
+    setRecipeCatalogStatus(hasLoadedRecipeCatalog.current ? 'refreshing' : 'loading');
+    setRecipeCatalogMessage('');
+
+    loadRecipeCatalog(activeProfile.preferences)
       .then((catalog) => {
         if (!isActive) return;
-        const nextRecipes = catalog.length ? catalog : mockRecipes;
-        setRecipes(nextRecipes);
-        setRecipeCatalogStatus(catalog.length ? 'ready' : 'fallback');
+
+        hasLoadedRecipeCatalog.current = true;
+
+        if (catalog.length) {
+          setRecipes((currentRecipes) => mergeRecipeLists(catalog, currentRecipes));
+          setRecipeCatalogStatus('ready');
+          return;
+        }
+
+        setRecipes((currentRecipes) => mergeRecipeLists(mockRecipes, currentRecipes));
+        setRecipeCatalogStatus('ready');
       })
-      .catch(() => {
+      .catch((error) => {
         if (!isActive) return;
-        setRecipes(mockRecipes);
-        setRecipeCatalogStatus('fallback');
+
+        hasLoadedRecipeCatalog.current = true;
+        setRecipes((currentRecipes) => mergeRecipeLists(mockRecipes, currentRecipes));
+        setRecipeCatalogStatus('error');
+        setRecipeCatalogMessage(getRecipeCatalogErrorMessage(error));
       });
 
     return () => {
       isActive = false;
     };
-  }, []);
+  }, [activePreferencesKey, activeProfile.preferences]);
 
   function updateActiveProfile(updateProfile) {
     setAppData((currentData) => ({
@@ -212,20 +289,21 @@ export default function App() {
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#f7f7f4] text-[#071124]">
       <main>
-        {recipeCatalogStatus === 'loading' ? (
+        {recipeCatalogStatus === 'loading' && !recipes.length ? (
           <div className="flex min-h-screen items-center justify-center px-6 text-center">
             <div className="max-w-sm">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[#ff5a43]">
                 Loading recipes
               </p>
-              <h1 className="mt-3 text-3xl font-black text-[#071124]">Free catalog setup</h1>
+              <h1 className="mt-3 text-3xl font-black text-[#071124]">Spoonacular catalog</h1>
               <p className="mt-3 text-sm leading-6 text-[#6f7d99]">
-                Pulling recipes from TheMealDB before the app becomes interactive.
+                Checking the local recipe proxy before the app becomes interactive.
               </p>
             </div>
           </div>
         ) : (
           <>
+            <CatalogStatusNotice status={recipeCatalogStatus} message={recipeCatalogMessage} />
             {activeTab === 'preferences' && (
           <PreferencesTab
             profile={activeProfile}
@@ -267,7 +345,7 @@ export default function App() {
       </main>
 
       <RecipeDetailSheet recipe={selectedRecipe} onClose={() => setSelectedRecipe(null)} />
-      {recipeCatalogStatus !== 'loading' && (
+      {(recipeCatalogStatus !== 'loading' || recipes.length > 0) && (
         <BottomNav tabs={TABS} activeTab={activeTab} onChange={setActiveTab} />
       )}
     </div>

@@ -201,8 +201,6 @@ export default function RecipeLibraryTab({
 
   return (
     <section className="mx-auto min-h-screen w-full max-w-[480px] bg-[#fdfdfe] px-3 pb-28 pt-2 text-[#071124] shadow-[0_0_80px_rgba(15,23,42,0.08)] min-[390px]:px-4">
-      <StatusBar />
-
       <header className="mt-4 flex items-start justify-between gap-3 min-[420px]:gap-4">
         <div className="min-w-0">
           <h1 className="text-[1.82rem] font-black leading-[0.96] tracking-[0.01em] text-[#071124] min-[380px]:text-[2.08rem] min-[420px]:text-[2.35rem]">
@@ -302,30 +300,6 @@ export default function RecipeLibraryTab({
         )}
       </div>
     </section>
-  );
-}
-
-function StatusBar() {
-  return (
-    <div className="flex h-6 items-center justify-between px-1 text-[1.04rem] font-black leading-none text-black">
-      <span>9:41</span>
-      <div className="flex items-center gap-1.5">
-        <span className="flex h-4 items-end gap-0.5" aria-hidden="true">
-          <span className="block h-1.5 w-1 rounded-sm bg-black" />
-          <span className="block h-2.5 w-1 rounded-sm bg-black" />
-          <span className="block h-3.5 w-1 rounded-sm bg-black" />
-          <span className="block h-4 w-1 rounded-sm bg-black" />
-        </span>
-        <span className="relative h-4 w-5" aria-hidden="true">
-          <span className="absolute left-0 top-0 h-5 w-5 rounded-full border-[3px] border-black border-b-transparent border-l-transparent border-r-transparent" />
-          <span className="absolute left-[4px] top-[5px] h-3 w-3 rounded-full border-[3px] border-black border-b-transparent border-l-transparent border-r-transparent" />
-          <span className="absolute bottom-0 left-[8px] h-1.5 w-1.5 rounded-full bg-black" />
-        </span>
-        <span className="flex h-[15px] w-[25px] items-center rounded-[4px] border-2 border-black p-[2px]" aria-hidden="true">
-          <span className="h-full flex-1 rounded-[2px] bg-black" />
-        </span>
-      </div>
-    </div>
   );
 }
 
