@@ -139,7 +139,7 @@ function buildGroceryItems(plannedRows, checkedItemIds = []) {
       }
 
       itemByName.set(normalized, {
-        id: `grocery-${normalized.replace(/\s+/g, '-')}`,
+        normalized,
         name: parsed.name || titleCase(ingredient),
         quantity: parsed.quantity,
         recipeIds: [row.recipe.id],
@@ -148,18 +148,32 @@ function buildGroceryItems(plannedRows, checkedItemIds = []) {
     });
   });
 
-  return Array.from(itemByName.values()).map((item) => ({
-    ...item,
-    checked: checkedItemIds.includes(item.id),
-  }));
+  return Array.from(itemByName.values()).map((item) => {
+    const normalizedKey = item.normalized.replace(/\s+/g, '-');
+    const recipeKey = item.recipeIds
+      .slice()
+      .sort()
+      .map((recipeId) => normalizeIngredient(recipeId).replace(/\s+/g, '-'))
+      .join('--');
+    const id = `grocery-${recipeKey}-${normalizedKey}`;
+    const legacyId = `grocery-${normalizedKey}`;
+
+    return {
+      ...item,
+      id,
+      legacyId,
+      checked: checkedItemIds.includes(id) || checkedItemIds.includes(legacyId),
+    };
+  });
 }
 
-function StatCard({ tone, icon: Icon, label, count }) {
+function StatCard({ tone, icon: Icon, label, count, onClick }) {
   const isGreen = tone === 'green';
 
   return (
     <button
       type="button"
+      onClick={onClick}
       className={cx(
         'grid min-h-[78px] grid-cols-[50px_minmax(0,1fr)_auto] items-center gap-2 rounded-[20px] border bg-white/84 p-2.5 text-left shadow-[0_12px_30px_rgba(15,23,42,0.05)] backdrop-blur-xl min-[420px]:min-h-[88px] min-[420px]:grid-cols-[56px_minmax(0,1fr)_auto] min-[420px]:p-3',
         isGreen ? 'border-[#cfe8d3]' : 'border-[#ffd5cd]',
@@ -221,11 +235,15 @@ function RecipeChip({ row, onOpen }) {
 }
 
 function GroceryRow({ item, checked = false, onToggle, onOpenRecipe }) {
+  function toggleItem() {
+    onToggle(item.id, item.legacyId);
+  }
+
   return (
     <div className="grid min-h-[48px] grid-cols-[34px_minmax(0,1fr)_auto_32px] items-center gap-1.5 border-b border-[#edf0f5] px-3 last:border-b-0 min-[420px]:min-h-[54px] min-[420px]:grid-cols-[38px_minmax(0,1fr)_auto_34px]">
       <button
         type="button"
-        onClick={() => onToggle(item.id)}
+        onClick={toggleItem}
         className={cx(
           'flex h-7 w-7 items-center justify-center rounded-lg border transition',
           checked
@@ -265,8 +283,9 @@ function GroceryRow({ item, checked = false, onToggle, onOpenRecipe }) {
       ) : (
         <button
           type="button"
+          onClick={toggleItem}
           className="flex h-7 w-7 items-center justify-center rounded-full bg-[#fff0ed] text-[#ff4f3f]"
-          aria-label={`Add note for ${item.name}`}
+          aria-label={`Mark ${item.name} as already have`}
         >
           <Plus className="h-5 w-5" aria-hidden="true" />
         </button>
@@ -275,11 +294,16 @@ function GroceryRow({ item, checked = false, onToggle, onOpenRecipe }) {
   );
 }
 
-function PantryCta() {
+function PantryCta({ onClearChecked, disabled }) {
   return (
     <button
       type="button"
-      className="mt-0 grid min-h-[62px] w-full grid-cols-[46px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-[18px] bg-[#eef9f1] px-3 text-left text-[#238b45]"
+      onClick={onClearChecked}
+      disabled={disabled}
+      className={cx(
+        'mt-0 grid min-h-[62px] w-full grid-cols-[46px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-[18px] bg-[#eef9f1] px-3 text-left text-[#238b45]',
+        disabled && 'cursor-not-allowed opacity-55',
+      )}
     >
       <span className="flex h-9 w-9 items-center justify-center rounded-[13px] border-2 border-[#35a563]">
         <ClipboardList className="h-5 w-5" aria-hidden="true" />
@@ -287,7 +311,7 @@ function PantryCta() {
       <span className="min-w-0">
         <span className="block truncate text-xs font-black text-[#1e944d]">Update pantry</span>
         <span className="mt-0.5 block truncate text-[0.68rem] font-bold text-[#667799]">
-          Let RecipeSwipe know what you have.
+          Move checked items back if your pantry changed.
         </span>
       </span>
       <ChevronRight className="h-5 w-5 text-[#677289]" aria-hidden="true" />
@@ -321,6 +345,7 @@ export default function GroceryTab({
   recipes,
   onOpenDetails,
   onToggleGroceryItem,
+  onSetGroceryItemsChecked,
   onAddRecipe,
 }) {
   const plannedRows = getPlannedRows(profile, recipes);
@@ -336,6 +361,14 @@ export default function GroceryTab({
     if (recipe) onOpenDetails(recipe);
   }
 
+  function markNeedItemsBought() {
+    onSetGroceryItemsChecked(needItems.flatMap((item) => [item.id, item.legacyId]), true);
+  }
+
+  function clearHaveItems() {
+    onSetGroceryItemsChecked(haveItems.flatMap((item) => [item.id, item.legacyId]), false);
+  }
+
   return (
     <section className="mx-auto min-h-screen w-full max-w-[480px] bg-[#fdfdfb] px-4 pb-24 pt-2 text-[#071124] shadow-[0_0_80px_rgba(15,23,42,0.08)]">
       <header className="flex items-start justify-between gap-4">
@@ -349,9 +382,10 @@ export default function GroceryTab({
         </div>
         <button
           type="button"
+          onClick={() => setHaveOpen((current) => !current)}
           className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[18px] border border-[#e0e5ee] bg-white text-[#637190] shadow-[0_12px_28px_rgba(15,23,42,0.05)]"
-          aria-label="Filter groceries"
-          title="Filter groceries"
+          aria-label={haveOpen ? 'Hide already-have items' : 'Show already-have items'}
+          title={haveOpen ? 'Hide already-have items' : 'Show already-have items'}
         >
           <SlidersHorizontal className="h-6 w-6 stroke-[2.1]" aria-hidden="true" />
         </button>
@@ -362,8 +396,20 @@ export default function GroceryTab({
       ) : (
         <>
           <div className="mt-5 grid grid-cols-2 gap-3">
-            <StatCard tone="coral" icon={ShoppingCart} label="Need to buy" count={needItems.length} />
-            <StatCard tone="green" icon={CheckCircle2} label="Already have" count={haveItems.length} />
+            <StatCard
+              tone="coral"
+              icon={ShoppingCart}
+              label="Need to buy"
+              count={needItems.length}
+              onClick={() => setNeedOpen(true)}
+            />
+            <StatCard
+              tone="green"
+              icon={CheckCircle2}
+              label="Already have"
+              count={haveItems.length}
+              onClick={() => setHaveOpen(true)}
+            />
           </div>
 
           <div className="mt-5 flex items-center justify-between gap-3 px-4">
@@ -418,21 +464,32 @@ export default function GroceryTab({
             </button>
 
             {needOpen && (
-              <div className="overflow-hidden rounded-[16px] border border-[#e7ebf1] bg-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.8)]">
-                {needItems.map((item) => (
-                  <GroceryRow
-                    key={item.id}
-                    item={item}
-                    onToggle={onToggleGroceryItem}
-                    onOpenRecipe={openRecipe}
-                  />
-                ))}
-                {!needItems.length && (
-                  <p className="px-4 py-8 text-center text-sm font-bold text-[#7d879f]">
-                    Everything in this plan is marked as already have.
-                  </p>
-                )}
-              </div>
+              <>
+                <div className="overflow-hidden rounded-[16px] border border-[#e7ebf1] bg-white shadow-[inset_0_0_0_1px_rgba(255,255,255,0.8)]">
+                  {needItems.map((item) => (
+                    <GroceryRow
+                      key={item.id}
+                      item={item}
+                      onToggle={onToggleGroceryItem}
+                      onOpenRecipe={openRecipe}
+                    />
+                  ))}
+                  {!needItems.length && (
+                    <p className="px-4 py-8 text-center text-sm font-bold text-[#7d879f]">
+                      Everything in this plan is marked as already have.
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  onClick={markNeedItemsBought}
+                  disabled={!needItems.length}
+                  className="mt-2.5 flex h-10 w-full items-center justify-center gap-2 rounded-[16px] bg-[#071124] px-4 text-xs font-black text-white shadow-[0_12px_24px_rgba(15,23,42,0.12)] disabled:cursor-not-allowed disabled:bg-[#d8dde7] disabled:text-[#7d879f]"
+                >
+                  <Check className="h-4 w-4" aria-hidden="true" />
+                  Mark all bought
+                </button>
+              </>
             )}
           </section>
 
@@ -478,7 +535,7 @@ export default function GroceryTab({
                   )}
                 </div>
 
-                <PantryCta />
+                <PantryCta onClearChecked={clearHaveItems} disabled={!haveItems.length} />
               </>
             )}
           </section>

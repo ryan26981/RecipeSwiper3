@@ -204,7 +204,7 @@ export default function DiscoverTab({
         />
         <RecipeActionButton
           type="details"
-          label="Nutrition"
+          label="Details"
           onClick={() => onOpenDetails(activeRecipe)}
         />
         <RecipeActionButton

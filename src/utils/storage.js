@@ -30,6 +30,21 @@ export function createInitialAppData() {
   };
 }
 
+function normalizeSavedRecipe(savedRecipe, fallbackFolders) {
+  if (!savedRecipe?.recipeId) return null;
+
+  const cookedCount = Number(savedRecipe.cookedCount);
+
+  return {
+    ...savedRecipe,
+    savedAt: Number(savedRecipe.savedAt) || Date.now(),
+    favorite: Boolean(savedRecipe.favorite),
+    folder: savedRecipe.folder || fallbackFolders[0] || 'Want to Try',
+    plannedDay: savedRecipe.plannedDay || '',
+    cookedCount: Number.isFinite(cookedCount) && cookedCount > 0 ? cookedCount : 0,
+  };
+}
+
 function normalizeProfile(profile) {
   const fallback = createDefaultProfile(profile?.name || 'Me', profile?.id);
 
@@ -43,7 +58,11 @@ function normalizeProfile(profile) {
         ? profile.preferences.cardStats.slice(0, 3)
         : fallback.preferences.cardStats,
     },
-    savedRecipes: Array.isArray(profile?.savedRecipes) ? profile.savedRecipes : [],
+    savedRecipes: Array.isArray(profile?.savedRecipes)
+      ? profile.savedRecipes
+        .map((savedRecipe) => normalizeSavedRecipe(savedRecipe, fallback.folders))
+        .filter(Boolean)
+      : [],
     hiddenRecipeIds: Array.isArray(profile?.hiddenRecipeIds) ? profile.hiddenRecipeIds : [],
     dismissedSuggestionIds: Array.isArray(profile?.dismissedSuggestionIds)
       ? profile.dismissedSuggestionIds

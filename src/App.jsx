@@ -187,6 +187,7 @@ export default function App() {
             favorite: false,
             folder: defaultFolder,
             plannedDay: '',
+            cookedCount: 0,
           },
           ...profile.savedRecipes,
         ],
@@ -258,6 +259,7 @@ export default function App() {
               favorite: false,
               folder: defaultFolder,
               plannedDay,
+              cookedCount: 0,
             },
             ...profile.savedRecipes,
           ],
@@ -293,6 +295,7 @@ export default function App() {
               favorite: true,
               folder: defaultFolder,
               plannedDay: '',
+              cookedCount: 0,
             },
             ...profile.savedRecipes,
           ],
@@ -320,18 +323,48 @@ export default function App() {
     });
   }
 
-  function toggleGroceryItem(itemId) {
+  function toggleGroceryItem(itemId, legacyItemId) {
     updateActiveProfile((profile) => {
       const checkedItems = profile.checkedGroceryItems || [];
-      const isChecked = checkedItems.includes(itemId);
+      const matchingIds = [itemId, legacyItemId].filter(Boolean);
+      const isChecked = matchingIds.some((checkedItemId) => checkedItems.includes(checkedItemId));
 
       return {
         ...profile,
         checkedGroceryItems: isChecked
-          ? checkedItems.filter((checkedItemId) => checkedItemId !== itemId)
+          ? checkedItems.filter((checkedItemId) => !matchingIds.includes(checkedItemId))
           : [itemId, ...checkedItems],
       };
     });
+  }
+
+  function setGroceryItemsChecked(itemIds, checked) {
+    updateActiveProfile((profile) => {
+      const currentItems = profile.checkedGroceryItems || [];
+      const itemSet = new Set(itemIds.filter(Boolean));
+
+      return {
+        ...profile,
+        checkedGroceryItems: checked
+          ? Array.from(new Set([...itemSet, ...currentItems]))
+          : currentItems.filter((itemId) => !itemSet.has(itemId)),
+      };
+    });
+  }
+
+  function markRecipeCooked(recipeId) {
+    updateActiveProfile((profile) => ({
+      ...profile,
+      savedRecipes: profile.savedRecipes.map((savedRecipe) =>
+        savedRecipe.recipeId === recipeId
+          ? {
+              ...savedRecipe,
+              cookedCount: (Number(savedRecipe.cookedCount) || 0) + 1,
+              plannedDay: '',
+            }
+          : savedRecipe,
+      ),
+    }));
   }
 
   return (
@@ -382,6 +415,7 @@ export default function App() {
             recipes={recipes}
             onOpenDetails={setSelectedRecipe}
             onToggleGroceryItem={toggleGroceryItem}
+            onSetGroceryItemsChecked={setGroceryItemsChecked}
             onAddRecipe={() => setActiveTab('library')}
           />
         )}
@@ -397,6 +431,8 @@ export default function App() {
             onMoveRecipeToFolder={moveRecipeToFolder}
             onPlanRecipe={planRecipe}
             onDismissSuggestion={dismissSuggestion}
+            onOpenGroceries={() => setActiveTab('groceries')}
+            onMarkRecipeCooked={markRecipeCooked}
           />
         )}
           </>

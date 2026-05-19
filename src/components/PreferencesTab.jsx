@@ -289,6 +289,7 @@ export default function PreferencesTab({
   const initials = profile.name.slice(0, 2).toUpperCase();
   const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
   const profileSettingsRef = useRef(null);
+  const cardFieldCount = 2 + preferences.cardStats.length;
 
   function setPreference(field, value) {
     onUpdatePreferences({ ...preferences, [field]: value });
@@ -590,7 +591,12 @@ export default function PreferencesTab({
 
         <section className="border-b border-[#eceef3] py-4 sm:py-5">
           <SectionHeader icon={ChefHat} tone="purple" title="Recipe Card" />
-          <p className="mb-3 text-sm font-bold text-[#8b93a7]">Pick up to three extra fields.</p>
+          <div className="mb-3 flex items-center justify-between gap-3">
+            <p className="text-sm font-bold text-[#8b93a7]">Pick up to three extra fields.</p>
+            <span className="shrink-0 rounded-full bg-[#f4eaff] px-3 py-1 text-xs font-black text-[#8a55e7]">
+              {cardFieldCount}/5 used
+            </span>
+          </div>
           <div className="flex flex-wrap gap-2">
             {OPTIONAL_CARD_STATS.map((stat) => {
               const selected = preferences.cardStats.includes(stat.id);

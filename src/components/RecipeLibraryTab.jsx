@@ -7,7 +7,6 @@ import {
   Clock3,
   Heart,
   ListFilter,
-  MoveHorizontal,
   Search,
   ShoppingBag,
   Sparkles,
@@ -18,16 +17,28 @@ import { cx } from './ui.jsx';
 
 const FILTERS = ['All', 'Planned', 'Want to Try', 'Favorites'];
 const SHOWCASE_COUNT = 4;
-const WEEK_DAYS = [
-  { day: 'Mon', full: 'Monday', date: '19' },
-  { day: 'Tue', full: 'Tuesday', date: '20' },
-  { day: 'Wed', full: 'Wednesday', date: '21', active: true },
-  { day: 'Thu', full: 'Thursday', date: '22' },
-  { day: 'Fri', full: 'Friday', date: '23' },
-  { day: 'Sat', full: 'Saturday', date: '24' },
-  { day: 'Sun', full: 'Sunday', date: '25' },
-];
-const DAY_NAMES = WEEK_DAYS.map((day) => day.full);
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+function getWeekDays(referenceDate = new Date()) {
+  const today = new Date(referenceDate);
+  today.setHours(0, 0, 0, 0);
+
+  const mondayOffset = today.getDay() === 0 ? -6 : 1 - today.getDay();
+  const weekStart = new Date(today);
+  weekStart.setDate(today.getDate() + mondayOffset);
+
+  return DAY_NAMES.map((full, index) => {
+    const date = new Date(weekStart);
+    date.setDate(weekStart.getDate() + index);
+
+    return {
+      day: full.slice(0, 3),
+      full,
+      date: String(date.getDate()),
+      active: date.getTime() === today.getTime(),
+    };
+  });
+}
 
 function createSearchText(recipe, folder, displayName) {
   return [
@@ -85,11 +96,6 @@ function getNextPlanningDay(rows) {
   return DAY_NAMES.find((day) => !plannedDays.has(day)) || DAY_NAMES[0];
 }
 
-function getFollowingDay(currentDay) {
-  const currentIndex = DAY_NAMES.indexOf(currentDay);
-  return DAY_NAMES[(currentIndex + 1) % DAY_NAMES.length] || DAY_NAMES[0];
-}
-
 function getSuggestion(recipes, profile) {
   if (!recipes.length) {
     return null;
@@ -136,6 +142,8 @@ export default function RecipeLibraryTab({
   onDeleteSavedRecipe,
   onPlanRecipe,
   onDismissSuggestion,
+  onOpenGroceries,
+  onMarkRecipeCooked,
 }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
@@ -201,10 +209,6 @@ export default function RecipeLibraryTab({
 
   function clearSavedPlan(savedRecipe) {
     onPlanRecipe(savedRecipe.recipeId, '');
-  }
-
-  function moveSavedRecipe(savedRecipe) {
-    onPlanRecipe(savedRecipe.recipeId, getFollowingDay(savedRecipe.plannedDay));
   }
 
   function handleSuggestionPlan() {
@@ -275,7 +279,11 @@ export default function RecipeLibraryTab({
       <GroceryStrip
         summary={grocerySummary}
         onView={() => {
-          setActiveFilter('Planned');
+          if (grocerySummary.mealCount) {
+            onOpenGroceries();
+            return;
+          }
+
           scrollToPlanner();
         }}
       />
@@ -307,7 +315,7 @@ export default function RecipeLibraryTab({
             onToggleFavorite={toggleSavedFavorite}
             onPlan={planSavedRecipe}
             onClearPlan={clearSavedPlan}
-            onMove={moveSavedRecipe}
+            onMarkCooked={onMarkRecipeCooked}
           />
         ))}
 
@@ -349,7 +357,7 @@ function CookTonightCard({ recipe, onOpenDetails, onPlan, onDismiss }) {
               Cook Tonight
             </p>
             <span className="shrink-0 rounded-full bg-[#f0e9ff] px-1.5 py-0.5 text-[0.55rem] font-black text-[#5f22ff] min-[420px]:py-1 min-[420px]:text-[0.58rem]">
-              AI Pick
+              Smart Pick
             </span>
           </div>
           <button type="button" onClick={() => onOpenDetails(recipe)} className="mt-1 block max-w-full text-left">
@@ -399,6 +407,7 @@ function InfoPill({ icon: Icon, label }) {
 }
 
 function WeekPlanner({ plannerRef, plannedRows, onViewPlan, onPlanDay }) {
+  const weekDays = getWeekDays();
   const rowByDay = new Map(plannedRows.map((row) => [row.plannedDay, row]));
   const plannedCount = plannedRows.length;
 
@@ -413,7 +422,7 @@ function WeekPlanner({ plannerRef, plannedRows, onViewPlan, onPlanDay }) {
       </div>
 
       <div className="mt-2.5 grid grid-cols-7 gap-0.5 min-[420px]:mt-3 min-[420px]:gap-1">
-        {WEEK_DAYS.map((item) => {
+        {weekDays.map((item) => {
           const savedRecipe = rowByDay.get(item.full);
           const recipe = savedRecipe?.recipe;
           return (
@@ -461,7 +470,7 @@ function WeekPlanner({ plannerRef, plannedRows, onViewPlan, onPlanDay }) {
         </span>
         <span className="flex items-center gap-2">
           <span className="h-2.5 w-2.5 rounded-full border-2 border-[#8793b4]" />
-          Open ({Math.max(0, WEEK_DAYS.length - plannedCount)})
+          Open ({Math.max(0, weekDays.length - plannedCount)})
         </span>
       </div>
     </section>
@@ -490,7 +499,7 @@ function GroceryStrip({ summary, onView }) {
         onClick={onView}
         className="ml-2 h-7 rounded-lg border border-[#ffb3aa] px-2.5 text-[0.72rem] font-bold text-[#ff402f] min-[420px]:h-8 min-[420px]:px-4 min-[420px]:text-sm"
       >
-        View
+        {hasPlan ? 'Open' : 'Plan'}
       </button>
     </div>
   );
@@ -504,7 +513,7 @@ function SavedPlannerRow({
   onToggleFavorite,
   onPlan,
   onClearPlan,
-  onMove,
+  onMarkCooked,
 }) {
   const { recipe } = savedRecipe;
   const displayName = savedRecipe.displayName || recipe.name;
@@ -581,11 +590,11 @@ function SavedPlannerRow({
             <div className="col-span-3 grid grid-cols-3 gap-2 min-[420px]:col-span-1 min-[420px]:grid-cols-1">
               <button
                 type="button"
-                onClick={() => onMove(savedRecipe)}
-                className="flex h-[46px] flex-col items-center justify-center rounded-xl border border-[#e3e7f0] bg-white text-[0.62rem] font-bold text-[#68779e] min-[420px]:h-[52px] min-[420px]:text-[0.68rem]"
+                onClick={() => onMarkCooked(savedRecipe.recipeId)}
+                className="flex h-[46px] flex-col items-center justify-center rounded-xl border border-[#bfe7cb] bg-[#f0fbf4] text-[0.62rem] font-black text-[#159653] min-[420px]:h-[52px] min-[420px]:text-[0.68rem]"
               >
-                <MoveHorizontal className="h-5 w-5" aria-hidden="true" />
-                Move
+                <Check className="h-5 w-5" aria-hidden="true" />
+                Cooked
               </button>
               <FavoriteButton savedRecipe={savedRecipe} onToggleFavorite={onToggleFavorite} />
               <SavedButton savedRecipe={savedRecipe} onSavedClick={onSavedClick} />

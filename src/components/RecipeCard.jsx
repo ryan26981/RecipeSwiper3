@@ -37,6 +37,20 @@ function getRecipeDescription(recipe) {
   return `${recipe.cuisine} ${recipe.mealType.toLowerCase()} with ${ingredients}.`;
 }
 
+function getHighlightIcon(label) {
+  const normalized = label.toLowerCase();
+
+  if (normalized.includes('protein')) return Dumbbell;
+  if (normalized.includes('min') || normalized.includes('cal')) return Clock3;
+  return ChefHat;
+}
+
+function getHighlightTone(index) {
+  if (index === 0) return 'green';
+  if (index === 1) return 'purple';
+  return 'neutral';
+}
+
 function StatBadge({ icon: Icon, label, tone = 'neutral' }) {
   return (
     <span
@@ -148,7 +162,14 @@ export default function RecipeCard({
   }
 
   const highlights = getHighlights(recipe, cardStats);
-  const featuredTag = recipe.tags[0] || highlights[0];
+  const statBadges = [
+    { label: `${recipe.timeMinutes} min`, icon: Clock3, tone: 'neutral' },
+    ...highlights.map((label, index) => ({
+      label,
+      icon: getHighlightIcon(label),
+      tone: getHighlightTone(index),
+    })),
+  ].slice(0, 4);
   const rotation = clamp(drag.x / 20, -9, 9);
   const dragDistance = Math.min(Math.abs(drag.x) + Math.abs(drag.y), 180);
   const saveOpacity = clamp((drag.x - 35) / 90, 0, 1);
@@ -177,6 +198,20 @@ export default function RecipeCard({
       }}
     >
       <div className="relative h-[clamp(285px,39svh,410px)] overflow-hidden bg-[#e8e2d5]">
+        {recipe.images.length > 1 && (
+          <div className="absolute inset-x-4 top-4 z-10 flex gap-1.5">
+            {recipe.images.map((image, index) => (
+              <span key={image} className="h-1 flex-1 overflow-hidden rounded-full bg-white/42">
+                <span
+                  className={`block h-full rounded-full bg-white transition duration-300 ${
+                    index <= photoIndex ? 'w-full' : 'w-0'
+                  }`}
+                />
+              </span>
+            ))}
+          </div>
+        )}
+
         <img
           src={recipe.images[photoIndex]}
           alt={recipe.name}
@@ -200,7 +235,7 @@ export default function RecipeCard({
           className="absolute left-1/2 top-16 -translate-x-1/2 rounded-[16px] border border-white/70 bg-white/40 px-4 py-2 text-sm font-black uppercase tracking-[0.16em] text-[#071124] shadow-action backdrop-blur-xl"
           style={{ opacity: detailsOpacity }}
         >
-          Nutrition
+          Details
         </div>
       </div>
 
@@ -219,9 +254,14 @@ export default function RecipeCard({
         <CalorieRing recipe={recipe} />
 
         <div className="col-span-2 flex min-w-0 flex-nowrap gap-1.5 overflow-hidden border-t border-[#f0eee9] pt-3 min-[380px]:gap-2">
-          <StatBadge icon={Clock3} label={`${recipe.timeMinutes} min`} />
-          <StatBadge icon={ChefHat} label={recipe.complexity} tone="green" />
-          {featuredTag && <StatBadge icon={Dumbbell} label={featuredTag} tone="purple" />}
+          {statBadges.map((badge) => (
+            <StatBadge
+              key={badge.label}
+              icon={badge.icon}
+              label={badge.label}
+              tone={badge.tone}
+            />
+          ))}
         </div>
       </div>
     </article>
