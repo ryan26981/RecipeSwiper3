@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import {
   Check,
   ChefHat,
@@ -288,6 +288,7 @@ export default function PreferencesTab({
   const stackLeft = getDiscoverRecipes(recipes, profile).length;
   const initials = profile.name.slice(0, 2).toUpperCase();
   const greetingName = profile.name.toLowerCase() === 'me' ? 'Alex' : profile.name;
+  const profileSettingsRef = useRef(null);
 
   function setPreference(field, value) {
     onUpdatePreferences({ ...preferences, [field]: value });
@@ -304,6 +305,31 @@ export default function PreferencesTab({
 
   function resetPreferences() {
     onUpdatePreferences({ ...DEFAULT_PREFERENCES });
+  }
+
+  function scrollToProfileSettings() {
+    profileSettingsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function addAvoidance() {
+    const nextAvoidance = window.prompt('Avoid recipes with...');
+    const cleanedAvoidance = nextAvoidance?.trim();
+    if (!cleanedAvoidance) return;
+
+    const currentAvoidances = preferences.dislikedIngredients
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const alreadyAdded = currentAvoidances.some(
+      (item) => item.toLowerCase() === cleanedAvoidance.toLowerCase(),
+    );
+
+    if (alreadyAdded) return;
+
+    setPreference(
+      'dislikedIngredients',
+      [...currentAvoidances, cleanedAvoidance].join(', '),
+    );
   }
 
   return (
@@ -329,6 +355,7 @@ export default function PreferencesTab({
               type="button"
               title="Profile settings"
               aria-label="Profile settings"
+              onClick={scrollToProfileSettings}
               className="flex h-11 w-11 shrink-0 items-center justify-center rounded-[16px] bg-white text-[#071124] shadow-[0_12px_28px_rgba(15,23,42,0.11)] sm:h-14 sm:w-14 sm:rounded-[20px]"
             >
               <Settings className="h-5 w-5 stroke-[2.2] sm:h-6 sm:w-6" aria-hidden="true" />
@@ -462,6 +489,7 @@ export default function PreferencesTab({
             ))}
             <button
               type="button"
+              onClick={addAvoidance}
               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-[18px] border border-dashed border-[#cfd3dc] bg-white px-4 text-sm font-bold text-[#8b93a7]"
             >
               <Plus className="h-4 w-4" aria-hidden="true" />
@@ -595,12 +623,14 @@ export default function PreferencesTab({
           </div>
         </section>
 
-        <ProfileMiniForm
-          profiles={profiles}
-          activeProfileId={activeProfileId}
-          onSwitchProfile={onSwitchProfile}
-          onCreateProfile={onCreateProfile}
-        />
+        <div ref={profileSettingsRef}>
+          <ProfileMiniForm
+            profiles={profiles}
+            activeProfileId={activeProfileId}
+            onSwitchProfile={onSwitchProfile}
+            onCreateProfile={onCreateProfile}
+          />
+        </div>
 
         <button
           type="button"

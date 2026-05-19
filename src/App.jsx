@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import BottomNav from './components/BottomNav.jsx';
 import DiscoverTab from './components/DiscoverTab.jsx';
+import GroceryTab from './components/GroceryTab.jsx';
 import PreferencesTab from './components/PreferencesTab.jsx';
 import RecipeDetailSheet from './components/RecipeDetailSheet.jsx';
 import RecipeLibraryTab from './components/RecipeLibraryTab.jsx';
@@ -275,6 +276,39 @@ export default function App() {
     });
   }
 
+  function saveRecipeAsFavorite(recipeId) {
+    updateActiveProfile((profile) => {
+      const defaultFolder = profile.folders.includes('Want to Try')
+        ? 'Want to Try'
+        : profile.folders[0];
+      const alreadySaved = profile.savedRecipes.some((savedRecipe) => savedRecipe.recipeId === recipeId);
+
+      if (!alreadySaved) {
+        return {
+          ...profile,
+          savedRecipes: [
+            {
+              recipeId,
+              savedAt: Date.now(),
+              favorite: true,
+              folder: defaultFolder,
+              plannedDay: '',
+            },
+            ...profile.savedRecipes,
+          ],
+          hiddenRecipeIds: profile.hiddenRecipeIds.filter((id) => id !== recipeId),
+        };
+      }
+
+      return {
+        ...profile,
+        savedRecipes: profile.savedRecipes.map((savedRecipe) =>
+          savedRecipe.recipeId === recipeId ? { ...savedRecipe, favorite: true } : savedRecipe,
+        ),
+      };
+    });
+  }
+
   function dismissSuggestion(recipeId) {
     updateActiveProfile((profile) => {
       if (profile.dismissedSuggestionIds.includes(recipeId)) return profile;
@@ -282,6 +316,20 @@ export default function App() {
       return {
         ...profile,
         dismissedSuggestionIds: [recipeId, ...profile.dismissedSuggestionIds],
+      };
+    });
+  }
+
+  function toggleGroceryItem(itemId) {
+    updateActiveProfile((profile) => {
+      const checkedItems = profile.checkedGroceryItems || [];
+      const isChecked = checkedItems.includes(itemId);
+
+      return {
+        ...profile,
+        checkedGroceryItems: isChecked
+          ? checkedItems.filter((checkedItemId) => checkedItemId !== itemId)
+          : [itemId, ...checkedItems],
       };
     });
   }
@@ -328,12 +376,23 @@ export default function App() {
           />
         )}
 
+            {activeTab === 'groceries' && (
+          <GroceryTab
+            profile={activeProfile}
+            recipes={recipes}
+            onOpenDetails={setSelectedRecipe}
+            onToggleGroceryItem={toggleGroceryItem}
+            onAddRecipe={() => setActiveTab('library')}
+          />
+        )}
+
             {activeTab === 'library' && (
           <RecipeLibraryTab
             profile={activeProfile}
             recipes={recipes}
             onOpenDetails={setSelectedRecipe}
             onToggleFavorite={toggleFavorite}
+            onSaveFavorite={saveRecipeAsFavorite}
             onDeleteSavedRecipe={deleteSavedRecipe}
             onMoveRecipeToFolder={moveRecipeToFolder}
             onPlanRecipe={planRecipe}

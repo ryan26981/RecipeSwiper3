@@ -14,6 +14,7 @@ export function createDefaultProfile(name, id) {
     savedRecipes: [],
     hiddenRecipeIds: [],
     dismissedSuggestionIds: [],
+    checkedGroceryItems: [],
     folders: [...DEFAULT_FOLDERS],
   };
 }
@@ -46,6 +47,9 @@ function normalizeProfile(profile) {
     hiddenRecipeIds: Array.isArray(profile?.hiddenRecipeIds) ? profile.hiddenRecipeIds : [],
     dismissedSuggestionIds: Array.isArray(profile?.dismissedSuggestionIds)
       ? profile.dismissedSuggestionIds
+      : [],
+    checkedGroceryItems: Array.isArray(profile?.checkedGroceryItems)
+      ? profile.checkedGroceryItems
       : [],
     folders: profile?.folders?.length ? profile.folders : fallback.folders,
   };

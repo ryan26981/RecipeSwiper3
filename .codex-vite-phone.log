@@ -3,8 +3,16 @@
 > vite --host 0.0.0.0 --port 5174
 
 
-  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m622[22m[2m[0m ms[22m
+  [32m[1mVITE[22m v5.4.21[39m  [2mready in [0m[1m2526[22m[2m[0m ms[22m
 
   [32m➜[39m  [1mLocal[22m:   [36mhttp://localhost:[1m5174[22m/[39m
   [32m➜[39m  [1mNetwork[22m: [36mhttp://10.0.0.47:[1m5174[22m/[39m
-[2m12:57:34 AM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/PreferencesTab.jsx, /src/index.css[22m
+[2m3:09:15 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css, /src/components/PreferencesTab.jsx[22m
+[2m3:09:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m3:09:16 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/BottomNav.jsx, /src/index.css[22m
+[2m3:09:36 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/App.jsx, /src/index.css[22m
+[2m3:11:16 PM[22m [36m[1m[vite][22m[39m [32mpage reload [39m[2msrc/components/GroceryTab.jsx[22m
+[2m3:11:24 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/GroceryTab.jsx, /src/index.css[22m
+[2m3:16:15 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/GroceryTab.jsx, /src/index.css[22m
+[2m3:16:25 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/BottomNav.jsx, /src/index.css[22m
+[2m3:18:56 PM[22m [36m[1m[vite][22m[39m [32mhmr update [39m[2m/src/components/GroceryTab.jsx, /src/index.css[22m

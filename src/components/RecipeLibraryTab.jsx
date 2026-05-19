@@ -5,6 +5,7 @@ import {
   Check,
   ChevronRight,
   Clock3,
+  Heart,
   ListFilter,
   MoveHorizontal,
   Search,
@@ -130,6 +131,8 @@ export default function RecipeLibraryTab({
   profile,
   recipes,
   onOpenDetails,
+  onToggleFavorite,
+  onSaveFavorite,
   onDeleteSavedRecipe,
   onPlanRecipe,
   onDismissSuggestion,
@@ -137,6 +140,7 @@ export default function RecipeLibraryTab({
   const [searchTerm, setSearchTerm] = useState('');
   const [activeFilter, setActiveFilter] = useState('All');
   const plannerRef = useRef(null);
+  const filtersRef = useRef(null);
   const allRows = useMemo(() => getRows(profile, recipes), [profile, recipes]);
   const persistedRows = useMemo(
     () => allRows.filter((savedRecipe) => !savedRecipe.isShowcase),
@@ -182,8 +186,21 @@ export default function RecipeLibraryTab({
     onDeleteSavedRecipe(savedRecipe.recipeId);
   }
 
+  function toggleSavedFavorite(savedRecipe) {
+    if (savedRecipe.isShowcase) {
+      onSaveFavorite(savedRecipe.recipeId);
+      return;
+    }
+
+    onToggleFavorite(savedRecipe.recipeId);
+  }
+
   function planSavedRecipe(savedRecipe) {
     onPlanRecipe(savedRecipe.recipeId, savedRecipe.plannedDay || getNextPlanningDay(plannedRows));
+  }
+
+  function clearSavedPlan(savedRecipe) {
+    onPlanRecipe(savedRecipe.recipeId, '');
   }
 
   function moveSavedRecipe(savedRecipe) {
@@ -199,6 +216,10 @@ export default function RecipeLibraryTab({
     plannerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
+  function scrollToFilters() {
+    filtersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
   return (
     <section className="mx-auto min-h-screen w-full max-w-[480px] bg-[#fdfdfe] px-3 pb-28 pt-2 text-[#071124] shadow-[0_0_80px_rgba(15,23,42,0.08)] min-[390px]:px-4">
       <header className="mt-4 flex items-start justify-between gap-3 min-[420px]:gap-4">
@@ -212,6 +233,7 @@ export default function RecipeLibraryTab({
         </div>
         <button
           type="button"
+          onClick={scrollToFilters}
           className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#e5e9f2] bg-white text-[#69779c] shadow-[0_8px_24px_rgba(15,23,42,0.06)] min-[420px]:h-12 min-[420px]:w-12"
           aria-label="Filter saved recipes"
         >
@@ -258,7 +280,7 @@ export default function RecipeLibraryTab({
         }}
       />
 
-      <div className="mt-2.5 grid h-11 grid-cols-4 overflow-hidden rounded-2xl border border-[#e2e6ef] bg-white text-[0.68rem] font-bold text-[#59688d] shadow-[0_12px_32px_rgba(15,23,42,0.035)] min-[380px]:text-[0.78rem] min-[420px]:h-[50px] min-[420px]:text-[0.88rem]">
+      <div ref={filtersRef} className="mt-2.5 grid h-11 grid-cols-4 overflow-hidden rounded-2xl border border-[#e2e6ef] bg-white text-[0.68rem] font-bold text-[#59688d] shadow-[0_12px_32px_rgba(15,23,42,0.035)] min-[380px]:text-[0.78rem] min-[420px]:h-[50px] min-[420px]:text-[0.88rem]">
         {FILTERS.map((filter) => (
           <button
             key={filter}
@@ -282,7 +304,9 @@ export default function RecipeLibraryTab({
             isLast={index === savedRecipes.length - 1}
             onOpenDetails={openRecipe}
             onSavedClick={handleSavedClick}
+            onToggleFavorite={toggleSavedFavorite}
             onPlan={planSavedRecipe}
+            onClearPlan={clearSavedPlan}
             onMove={moveSavedRecipe}
           />
         ))}
@@ -477,7 +501,9 @@ function SavedPlannerRow({
   isLast,
   onOpenDetails,
   onSavedClick,
+  onToggleFavorite,
   onPlan,
+  onClearPlan,
   onMove,
 }) {
   const { recipe } = savedRecipe;
@@ -536,13 +562,14 @@ function SavedPlannerRow({
         </p>
       </div>
 
-      <div className="col-span-2 grid grid-cols-2 gap-2 min-[420px]:col-span-1 min-[420px]:flex min-[420px]:flex-col">
+      <div className="col-span-2 grid grid-cols-3 gap-2 min-[420px]:col-span-1 min-[420px]:flex min-[420px]:flex-col">
         {savedRecipe.plannedDay ? (
           <>
             <button
               type="button"
-              onClick={() => onPlan(savedRecipe)}
-              className="flex h-[42px] items-center justify-center gap-1 rounded-xl bg-[#eaf9f1] px-1.5 text-center text-[0.66rem] font-black leading-tight text-[#009b57] min-[420px]:h-[48px] min-[420px]:gap-2 min-[420px]:text-[0.76rem]"
+              onClick={() => onClearPlan(savedRecipe)}
+              className="col-span-3 flex h-[42px] items-center justify-center gap-1 rounded-xl bg-[#eaf9f1] px-1.5 text-center text-[0.66rem] font-black leading-tight text-[#009b57] min-[420px]:col-span-1 min-[420px]:h-[48px] min-[420px]:gap-2 min-[420px]:text-[0.76rem]"
+              title={`Remove ${displayName} from ${savedRecipe.plannedDay}`}
             >
               <Calendar className="h-5 w-5 shrink-0" aria-hidden="true" />
               <span>
@@ -551,7 +578,7 @@ function SavedPlannerRow({
                 <span className="font-semibold">{savedRecipe.plannedDay}</span>
               </span>
             </button>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="col-span-3 grid grid-cols-3 gap-2 min-[420px]:col-span-1 min-[420px]:grid-cols-1">
               <button
                 type="button"
                 onClick={() => onMove(savedRecipe)}
@@ -560,6 +587,7 @@ function SavedPlannerRow({
                 <MoveHorizontal className="h-5 w-5" aria-hidden="true" />
                 Move
               </button>
+              <FavoriteButton savedRecipe={savedRecipe} onToggleFavorite={onToggleFavorite} />
               <SavedButton savedRecipe={savedRecipe} onSavedClick={onSavedClick} />
             </div>
           </>
@@ -573,11 +601,29 @@ function SavedPlannerRow({
               <Calendar className="h-5 w-5" aria-hidden="true" />
               Plan
             </button>
+            <FavoriteButton savedRecipe={savedRecipe} onToggleFavorite={onToggleFavorite} />
             <SavedButton savedRecipe={savedRecipe} onSavedClick={onSavedClick} />
           </>
         )}
       </div>
     </article>
+  );
+}
+
+function FavoriteButton({ savedRecipe, onToggleFavorite }) {
+  const label = savedRecipe.favorite ? 'Favorited' : 'Favorite';
+
+  return (
+    <button
+      type="button"
+      onClick={() => onToggleFavorite(savedRecipe)}
+      className="flex h-[42px] flex-col items-center justify-center rounded-xl border border-[#e3e7f0] bg-white text-[0.66rem] font-bold text-[#ff402f] min-[420px]:h-[48px] min-[420px]:text-[0.74rem]"
+      aria-pressed={savedRecipe.favorite}
+      title={savedRecipe.favorite ? 'Remove favorite' : 'Add favorite'}
+    >
+      <Heart className={savedRecipe.favorite ? 'h-5 w-5 fill-current' : 'h-5 w-5'} aria-hidden="true" />
+      <span className="max-w-full truncate px-1">{label}</span>
+    </button>
   );
 }
 

@@ -1,6 +1,7 @@
 export const TABS = [
   { id: 'preferences', label: 'Profile' },
   { id: 'discover', label: 'Explore' },
+  { id: 'groceries', label: 'Groceries' },
   { id: 'library', label: 'Saved' },
 ];
 
